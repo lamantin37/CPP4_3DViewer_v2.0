@@ -10,6 +10,7 @@
 #include <QScreen>
 
 #include "settingswindow.h"
+#include "../controller/s21_controller.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -30,9 +31,11 @@ class MainWindow : public QMainWindow {
 
   void start_parsing(const std::string &filename, Object &objInfo);
   void image_render();
+  void UpdateView(QString& filename);
 
  private:
   Ui::MainWindow *ui;
+  Controller *controller;
   Qt3DCore::QEntity *parentWin = nullptr;    // корневое окно
   Qt3DRender::QCamera *cameraObj = nullptr;  // камера
   Qt3DCore::QEntity *sceneLoader = nullptr;  // базовая сущность

@@ -9,6 +9,8 @@ MainWindow::MainWindow(QWidget *parent)
       re_settings("School 21", "3DViewer") {
   settingsButton = new QPushButton("Settings", this);
 
+  controller = new Controller();
+  
   ui->setupUi(this);
   parentWin = new Qt3DCore::QEntity();  // конктруктор корневого окна
   parentWin->setObjectName("Root window");
@@ -56,35 +58,6 @@ MainWindow::MainWindow(QWidget *parent)
   connect(saveModelButton, &QPushButton::clicked, this,
           [=]() { image_render(); });
   settingsWin = new SettingsWindow(this);
-}
-
-void MainWindow::open_object_file(Qt3DExtras::Qt3DWindow *view,
-                                  QLineEdit *lineEdit, QPushButton *button) {
-  connect(button, &QPushButton::clicked, this, [=]() {
-    QString filename = QFileDialog::getOpenFileName(this, "Open a file", "",
-                                                    "Obj Files (*.obj)");
-    lineEdit->setText(filename);
-    if (prevModel != filename) {
-      if (mesh != nullptr) {
-        object->removeComponent(mesh);
-        delete mesh;
-      }
-      prevModel = filename;
-      mesh = new Qt3DRender::QMesh(parentWin);
-      mesh->setSource(QUrl::fromLocalFile(filename));
-      mesh->setPrimitiveType(
-          Qt3DRender::QGeometryRenderer::Lines);  // Установка режима
-                                                  // отображения каркаса
-      settingsWin->load_settings(&re_settings, cameraObj, mesh, view, object,
-                                 line_material);
-      object->addComponent(mesh);
-      transform = new Qt3DCore::QTransform();
-      object->addComponent(transform);
-      const std::string charstring = filename.toStdString();
-      start_parsing(charstring, objInfo);
-      settings(view);
-    }
-  });
 }
 
 void MainWindow::object_info(const Object &object, const char *filename) {
@@ -156,4 +129,61 @@ MainWindow::~MainWindow() {
   settingsWin->save_settings(&re_settings, cameraObj, mesh, line_material,
                              view);
   delete ui;
+}
+
+void MainWindow::open_object_file(Qt3DExtras::Qt3DWindow *view,
+                                  QLineEdit *lineEdit, QPushButton *button) {
+    connect(button, &QPushButton::clicked, this, [=]() {
+        QString filename = QFileDialog::getOpenFileName(this, "Open a file", "", "Obj Files (*.obj)");
+        lineEdit->setText(filename);
+        if (prevModel != filename) {
+            prevModel = filename;
+            controller->startParsing(filename.toStdString(), objInfo);
+            UpdateView(filename);
+        }
+    });
+}
+
+void MainWindow::UpdateView(QString& filename) {
+    if (fileLabel) {
+        layout->removeWidget(fileLabel);
+        delete fileLabel;
+    }
+    
+    fileLabel = new QLabel("File: " + prevModel, this);
+    layout->addWidget(fileLabel);
+
+    if (verticesLabel) {
+        layout->removeWidget(verticesLabel);
+        delete verticesLabel;
+    }
+    verticesLabel = new QLabel("Number of vertices: " + QString::number(objInfo.num_of_vertices), this);
+    layout->addWidget(verticesLabel);
+
+    if (polygonsLabel) {
+        layout->removeWidget(polygonsLabel);
+        delete polygonsLabel;
+    }
+    polygonsLabel = new QLabel("Number of polygons: " + QString::number(objInfo.num_of_polygons), this);
+    layout->addWidget(polygonsLabel);
+
+
+  if (mesh != nullptr) {
+    object->removeComponent(mesh);
+    delete mesh;
+  }
+  
+  prevModel = filename;
+  mesh = new Qt3DRender::QMesh(parentWin);
+  mesh->setSource(QUrl::fromLocalFile(filename));
+  mesh->setPrimitiveType(
+      Qt3DRender::QGeometryRenderer::Lines);
+  settingsWin->load_settings(&re_settings, cameraObj, mesh, view, object,
+                             line_material);
+  object->addComponent(mesh);
+  transform = new Qt3DCore::QTransform();
+  object->addComponent(transform);
+  const std::string charstring = filename.toStdString();
+  start_parsing(charstring, objInfo);
+  settings(view);
 }

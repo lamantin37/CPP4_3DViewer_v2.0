@@ -11,6 +11,7 @@ SOURCES += \
     ../backend/s21_matrix/s21_matrix_oop.cc \
     ../backend/s21_parser.cc \
     ../backend/s21_transformations.cc \
+    ../controller/s21_controller.cc \
     mainwindow.cc \
     settingswindow.cc \
     ../main.cc
@@ -18,6 +19,7 @@ SOURCES += \
 HEADERS += \
     ../backend/auxiliary_modules.h \
     ../backend/s21_matrix/s21_matrix_oop.h \
+    ../controller/s21_controller.h \
     mainwindow.h \
     settingswindow.h
 
