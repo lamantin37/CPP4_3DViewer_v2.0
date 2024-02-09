@@ -9,8 +9,8 @@
 #include <QMesh>
 #include <QScreen>
 
-#include "settingswindow.h"
 #include "../controller/s21_controller.h"
+#include "settingswindow.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -31,7 +31,7 @@ class MainWindow : public QMainWindow {
 
   void start_parsing(const std::string &filename, Object &objInfo);
   void image_render();
-  void UpdateView(QString& filename);
+  void UpdateView(QString &filename);
 
  private:
   Ui::MainWindow *ui;

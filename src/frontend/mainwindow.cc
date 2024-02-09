@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
   settingsButton = new QPushButton("Settings", this);
 
   controller = new Controller();
-  
+
   ui->setupUi(this);
   parentWin = new Qt3DCore::QEntity();  // конктруктор корневого окна
   parentWin->setObjectName("Root window");
@@ -133,51 +133,42 @@ MainWindow::~MainWindow() {
 
 void MainWindow::open_object_file(Qt3DExtras::Qt3DWindow *view,
                                   QLineEdit *lineEdit, QPushButton *button) {
-    connect(button, &QPushButton::clicked, this, [=]() {
-        QString filename = QFileDialog::getOpenFileName(this, "Open a file", "", "Obj Files (*.obj)");
-        lineEdit->setText(filename);
-        if (prevModel != filename) {
-            prevModel = filename;
-            controller->startParsing(filename.toStdString(), objInfo);
-            UpdateView(filename);
-        }
-    });
+  connect(button, &QPushButton::clicked, this, [=]() {
+    QString filename = QFileDialog::getOpenFileName(this, "Open a file", "",
+                                                    "Obj Files (*.obj)");
+    lineEdit->setText(filename);
+    if (prevModel != filename) {
+      prevModel = filename;
+      controller->startParsing(filename.toStdString(), objInfo);
+      UpdateView(filename);
+    }
+  });
 }
 
-void MainWindow::UpdateView(QString& filename) {
-    if (fileLabel) {
-        layout->removeWidget(fileLabel);
-        delete fileLabel;
-    }
-    
-    fileLabel = new QLabel("File: " + prevModel, this);
-    layout->addWidget(fileLabel);
+void MainWindow::UpdateView(QString &filename) {
+  if (fileLabel) {
+    layout->removeWidget(fileLabel);
+    delete fileLabel;
+  }
+  QString fileInfo = QString("<b>File:</b> %1<br>").arg(prevModel);
+  QString verticesInfo = QString("<b>Number of vertices:</b> %1<br>")
+                             .arg(QString::number(objInfo.num_of_vertices));
+  QString polygonsInfo = QString("<b>Number of polygons:</b> %1")
+                             .arg(QString::number(objInfo.num_of_polygons));
 
-    if (verticesLabel) {
-        layout->removeWidget(verticesLabel);
-        delete verticesLabel;
-    }
-    verticesLabel = new QLabel("Number of vertices: " + QString::number(objInfo.num_of_vertices), this);
-    layout->addWidget(verticesLabel);
-
-    if (polygonsLabel) {
-        layout->removeWidget(polygonsLabel);
-        delete polygonsLabel;
-    }
-    polygonsLabel = new QLabel("Number of polygons: " + QString::number(objInfo.num_of_polygons), this);
-    layout->addWidget(polygonsLabel);
-
+  fileLabel = new QLabel(fileInfo + verticesInfo + polygonsInfo, this);
+  layout->addWidget(fileLabel);
+  fileLabel->setMaximumHeight(60);
 
   if (mesh != nullptr) {
     object->removeComponent(mesh);
     delete mesh;
   }
-  
+
   prevModel = filename;
   mesh = new Qt3DRender::QMesh(parentWin);
   mesh->setSource(QUrl::fromLocalFile(filename));
-  mesh->setPrimitiveType(
-      Qt3DRender::QGeometryRenderer::Lines);
+  mesh->setPrimitiveType(Qt3DRender::QGeometryRenderer::Lines);
   settingsWin->load_settings(&re_settings, cameraObj, mesh, view, object,
                              line_material);
   object->addComponent(mesh);
