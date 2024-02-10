@@ -32,17 +32,17 @@
 
 #define MOVE_MACRO(SLIDER, LINE_EDIT)                         \
   connect(SLIDER, &QSlider::valueChanged, this, [=]() {       \
-    float x = moveX->value();                                 \
-    float y = moveY->value();                                 \
-    float z = moveZ->value();                                 \
+    float x = move_x_->value();                               \
+    float y = move_y_->value();                               \
+    float z = move_z_->value();                               \
     transform->setTranslation(QVector3D(x, y, z));            \
     LINE_EDIT->setText(QString::number(SLIDER->value()));     \
   });                                                         \
                                                               \
   connect(LINE_EDIT, &QLineEdit::returnPressed, this, [=]() { \
-    float x = moveX->value();                                 \
-    float y = moveY->value();                                 \
-    float z = moveZ->value();                                 \
+    float x = move_x_->value();                               \
+    float y = move_y_->value();                               \
+    float z = move_z_->value();                               \
     transform->setTranslation(QVector3D(x, y, z));            \
     SLIDER->setValue(LINE_EDIT->text().toFloat());            \
   });
@@ -51,63 +51,60 @@ class SettingsWindow : public QWidget {
   Q_OBJECT
  public:
   explicit SettingsWindow(QWidget *parent = nullptr);
-  void add_move_sliders(Qt3DCore::QTransform *);
-  void add_rotate_sliders(Qt3DCore::QTransform *);
-  void add_scale_slider(Qt3DRender::QCamera *cameraObj);
-  void projection_settings(Qt3DRender::QCamera *, Qt3DExtras::Qt3DWindow *view);
-  void line_type_settings(Qt3DRender::QMesh *);
-  void line_color_settings(Qt3DCore::QEntity *,
-                           Qt3DExtras::QDiffuseSpecularMaterial *);
-  void background_settings(Qt3DExtras::Qt3DWindow *);
-  void save_settings(QSettings *, Qt3DRender::QCamera *, Qt3DRender::QMesh *,
-                     Qt3DExtras::QDiffuseSpecularMaterial *,
-                     Qt3DExtras::Qt3DWindow *);
-  void load_settings(QSettings *, Qt3DRender::QCamera *, Qt3DRender::QMesh *,
-                     Qt3DExtras::Qt3DWindow *, Qt3DCore::QEntity *,
-                     Qt3DExtras::QDiffuseSpecularMaterial *);
+  void AddMoveSliders(Qt3DCore::QTransform *transform);
+  void AddRotateSliders(Qt3DCore::QTransform *transform);
+  void AddScaleSliders(Qt3DRender::QCamera *camera_obj);
+  void ProjectionSettings(Qt3DRender::QCamera *camera_obj,
+                          Qt3DExtras::Qt3DWindow *view);
+  void LineTypeSettings(Qt3DRender::QMesh *mesh);
+  void LineColorSettings(Qt3DCore::QEntity *object,
+                         Qt3DExtras::QDiffuseSpecularMaterial *line_material);
+  void BackgroundSettings(Qt3DExtras::Qt3DWindow *view);
+  void SaveSettings(QSettings *setts, Qt3DRender::QCamera *camera_obj,
+                    Qt3DRender::QMesh *mesh,
+                    Qt3DExtras::QDiffuseSpecularMaterial *line_material,
+                    Qt3DExtras::Qt3DWindow *view);
+  void LoadSettings(QSettings *setts, Qt3DRender::QCamera *camera_obj,
+                    Qt3DRender::QMesh *mesh, Qt3DExtras::Qt3DWindow *view,
+                    Qt3DCore::QEntity *object,
+                    Qt3DExtras::QDiffuseSpecularMaterial *line_material);
 
  private:
-  QLabel *label;
-  QVBoxLayout *layout = nullptr;
-  QSlider *moveX = nullptr;
-  QSlider *moveY = nullptr;
-  QSlider *moveZ = nullptr;
-  QLabel *moveXlabel = nullptr;
-  QLabel *moveYlabel = nullptr;
-  QLabel *moveZlabel = nullptr;
-  QLineEdit *lineEditX = nullptr;
-  QLineEdit *lineEditY = nullptr;
-  QLineEdit *lineEditZ = nullptr;
+  QVBoxLayout *layout_ = nullptr;
+  QSlider *move_x_ = nullptr;
+  QSlider *move_y_ = nullptr;
+  QSlider *move_z_ = nullptr;
+  QLabel *move_x_label_ = nullptr;
+  QLabel *move_y_label_ = nullptr;
+  QLabel *move_z_label_ = nullptr;
+  QLineEdit *line_edit_x_ = nullptr;
+  QLineEdit *line_edit_y_ = nullptr;
+  QLineEdit *line_edit_z_ = nullptr;
 
-  QSlider *rotateX = nullptr;
-  QSlider *rotateY = nullptr;
-  QSlider *rotateZ = nullptr;
-  QLabel *rotateXlabel = nullptr;
-  QLabel *rotateYlabel = nullptr;
-  QLabel *rotateZlabel = nullptr;
-  QLineEdit *lineEditRX = nullptr;
-  QLineEdit *lineEditRY = nullptr;
-  QLineEdit *lineEditRZ = nullptr;
+  QSlider *rotate_x_ = nullptr;
+  QSlider *rotate_y_ = nullptr;
+  QSlider *rotate_z_ = nullptr;
+  QLabel *rotate_x_label_ = nullptr;
+  QLabel *rotate_y_label_ = nullptr;
+  QLabel *rotate_z_label_ = nullptr;
+  QLineEdit *line_edit_rx_ = nullptr;
+  QLineEdit *line_edit_ry_ = nullptr;
+  QLineEdit *line_edit_rz_ = nullptr;
 
-  QLineEdit *scaleEdit = nullptr;
+  QLineEdit *scale_edit_ = nullptr;
 
-  QSlider *scaleObject = nullptr;
-  QLabel *scaleObjectLabel = nullptr;
+  QSlider *scale_object_ = nullptr;
+  QLabel *scale_object_label_ = nullptr;
 
-  QPushButton *parallelProjection = nullptr;
-  QPushButton *centralProjection = nullptr;
-  QPushButton *backgroundColor = nullptr;
-  QPushButton *lineColor = nullptr;
-  QPushButton *lineType = nullptr;
-  QPushButton *pointType = nullptr;
-  QColor background_color;
-  QColor line_color;
-  QColor point_color;
-  QLabel *typeLabel = nullptr;
-  QRadioButton *lineTypeRadioButton = nullptr;
-  QRadioButton *dotTypeRadioButton = nullptr;
-  QHBoxLayout *LineTypeLayout;
-  Qt3DExtras::QDiffuseSpecularMaterial *point_material;
+  QPushButton *background_color_button_ = nullptr;
+  QPushButton *line_color_button_ = nullptr;
+  QColor background_color_;
+  QColor line_color_;
+  QColor point_color_;
+  QLabel *type_label_ = nullptr;
+  QRadioButton *line_type_radio_button_ = nullptr;
+  QRadioButton *dot_type_radio_button_ = nullptr;
+  QHBoxLayout *line_type_layout_;
 };
 
 #endif  // SETTINGSWINDOW_H

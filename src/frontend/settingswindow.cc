@@ -3,65 +3,65 @@
 SettingsWindow::SettingsWindow(QWidget *parent) : QWidget(parent) {
   setWindowFlags(Qt::Window);
   setFixedSize(QSize(400, 600));
-  layout = new QVBoxLayout();
-  moveX = new QSlider(Qt::Horizontal, this);
-  moveZ = new QSlider(Qt::Horizontal, this);
-  moveY = new QSlider(Qt::Horizontal, this);
-  lineEditX = new QLineEdit(this);
-  lineEditX->setValidator(new QDoubleValidator(this));
-  lineEditY = new QLineEdit(this);
-  lineEditY->setValidator(new QDoubleValidator(this));
-  lineEditZ = new QLineEdit(this);
-  lineEditZ->setValidator(new QDoubleValidator(this));
-  moveXlabel = new QLabel("X-axis movement", this);
-  moveYlabel = new QLabel("Y-axis movement", this);
-  moveZlabel = new QLabel("Z-axis movement", this);
+  layout_ = new QVBoxLayout();
+  move_x_ = new QSlider(Qt::Horizontal, this);
+  move_z_ = new QSlider(Qt::Horizontal, this);
+  move_y_ = new QSlider(Qt::Horizontal, this);
+  line_edit_x_ = new QLineEdit(this);
+  line_edit_x_->setValidator(new QDoubleValidator(this));
+  line_edit_y_ = new QLineEdit(this);
+  line_edit_y_->setValidator(new QDoubleValidator(this));
+  line_edit_z_ = new QLineEdit(this);
+  line_edit_z_->setValidator(new QDoubleValidator(this));
+  move_x_label_ = new QLabel("X-axis movement", this);
+  move_y_label_ = new QLabel("Y-axis movement", this);
+  move_z_label_ = new QLabel("Z-axis movement", this);
 
-  rotateX = new QSlider(Qt::Horizontal, this);
-  lineEditRX = new QLineEdit(this);
-  lineEditRX->setValidator(new QDoubleValidator(this));
-  rotateY = new QSlider(Qt::Horizontal, this);
-  lineEditRY = new QLineEdit(this);
-  lineEditRY->setValidator(new QDoubleValidator(this));
-  rotateZ = new QSlider(Qt::Horizontal, this);
-  lineEditRZ = new QLineEdit(this);
-  lineEditRZ->setValidator(new QDoubleValidator(this));
-  rotateXlabel = new QLabel("X-axis rotation", this);
-  rotateYlabel = new QLabel("Y-axis rotation", this);
-  rotateZlabel = new QLabel("Z-axis rotation", this);
+  rotate_x_ = new QSlider(Qt::Horizontal, this);
+  line_edit_rx_ = new QLineEdit(this);
+  line_edit_rx_->setValidator(new QDoubleValidator(this));
+  rotate_y_ = new QSlider(Qt::Horizontal, this);
+  line_edit_ry_ = new QLineEdit(this);
+  line_edit_ry_->setValidator(new QDoubleValidator(this));
+  rotate_z_ = new QSlider(Qt::Horizontal, this);
+  line_edit_rz_ = new QLineEdit(this);
+  line_edit_rz_->setValidator(new QDoubleValidator(this));
+  rotate_x_label_ = new QLabel("X-axis rotation", this);
+  rotate_y_label_ = new QLabel("Y-axis rotation", this);
+  rotate_z_label_ = new QLabel("Z-axis rotation", this);
 
-  scaleObject = new QSlider(Qt::Horizontal, this);
-  scaleObjectLabel = new QLabel("Scale object");
-  scaleEdit = new QLineEdit(this);
-  scaleEdit->setValidator(new QDoubleValidator(this));
+  scale_object_ = new QSlider(Qt::Horizontal, this);
+  scale_object_label_ = new QLabel("Scale object");
+  scale_edit_ = new QLineEdit(this);
+  scale_edit_->setValidator(new QDoubleValidator(this));
 
-  backgroundColor = new QPushButton("Change background color", this);
-  lineColor = new QPushButton("Change line color", this);
-  background_color = QColor(Qt::white);
-  line_color = QColor(Qt::black);
-  point_color = QColor(Qt::black);
+  background_color_button_ = new QPushButton("Change background color", this);
+  line_color_button_ = new QPushButton("Change line color", this);
+  background_color_ = QColor(Qt::white);
+  line_color_ = QColor(Qt::black);
+  point_color_ = QColor(Qt::black);
 
-  setLayout(layout);
+  setLayout(layout_);
 }
 
-void SettingsWindow::save_settings(
-    QSettings *setts, Qt3DRender::QCamera *cameraObj, Qt3DRender::QMesh *mesh,
+void SettingsWindow::SaveSettings(
+    QSettings *setts, Qt3DRender::QCamera *camera_obj, Qt3DRender::QMesh *mesh,
     Qt3DExtras::QDiffuseSpecularMaterial *line_material,
     Qt3DExtras::Qt3DWindow *view) {
-  Qt3DRender::QCameraLens *lens = cameraObj->lens();
-  Qt3DRender::QCameraLens::ProjectionType projectionType =
+  Qt3DRender::QCameraLens *lens = camera_obj->lens();
+  Qt3DRender::QCameraLens::ProjectionType projection_type =
       lens->projectionType();
-  if (projectionType == Qt3DRender::QCameraLens::PerspectiveProjection) {
+  if (projection_type == Qt3DRender::QCameraLens::PerspectiveProjection) {
     setts->setValue("projection", "parallel");
-  } else if (projectionType ==
+  } else if (projection_type ==
              Qt3DRender::QCameraLens::OrthographicProjection) {
     setts->setValue("projection", "central");
   }
-  Qt3DRender::QGeometryRenderer::PrimitiveType primitiveType =
+  Qt3DRender::QGeometryRenderer::PrimitiveType primitive_type =
       mesh->primitiveType();
-  if (primitiveType == Qt3DRender::QGeometryRenderer::PrimitiveType::Lines) {
+  if (primitive_type == Qt3DRender::QGeometryRenderer::PrimitiveType::Lines) {
     setts->setValue("line type", "lines");
-  } else if (primitiveType ==
+  } else if (primitive_type ==
              Qt3DRender::QGeometryRenderer::PrimitiveType::Points) {
     setts->setValue("line type", "points");
   }
@@ -69,189 +69,190 @@ void SettingsWindow::save_settings(
   if (line_material->ambient() != QColor(Qt::black))
     line_clr = line_material->ambient();
   setts->setValue("line material", line_clr.name());
-  QColor backgroundColor = view->defaultFrameGraph()->clearColor();
-  setts->setValue("background color", backgroundColor.name());
+  QColor background_color_button_ = view->defaultFrameGraph()->clearColor();
+  setts->setValue("background color", background_color_button_.name());
   setts->sync();
 }
 
-void SettingsWindow::load_settings(
-    QSettings *setts, Qt3DRender::QCamera *cameraObj, Qt3DRender::QMesh *mesh,
+void SettingsWindow::LoadSettings(
+    QSettings *setts, Qt3DRender::QCamera *camera_obj, Qt3DRender::QMesh *mesh,
     Qt3DExtras::Qt3DWindow *view, Qt3DCore::QEntity *object,
     Qt3DExtras::QDiffuseSpecularMaterial *line_material) {
   QString projection = setts->value("projection").toString();
   if (projection == "parallel") {
-    float aspectRatio = float(view->width()) / view->height();
-    cameraObj->lens()->setPerspectiveProjection(45.0f, aspectRatio, 0.1f,
-                                                10000.0f);
+    float aspect_ratio = float(view->width()) / view->height();
+    camera_obj->lens()->setPerspectiveProjection(45.0f, aspect_ratio, 0.1f,
+                                                 10000.0f);
   } else if (projection == "central") {
-    float aspectRatio = float(view->width()) / view->height();
-    cameraObj->lens()->setOrthographicProjection(-aspectRatio, aspectRatio,
-                                                 -1.0, 1.0, 0.1f, 10000.0f);
+    float aspect_ratio = float(view->width()) / view->height();
+    camera_obj->lens()->setOrthographicProjection(-aspect_ratio, aspect_ratio,
+                                                  -1.0, 1.0, 0.1f, 10000.0f);
   }
-  QString primType = setts->value("line type").toString();
-  if (primType == "lines") {
+  QString prim_type = setts->value("line type").toString();
+  if (prim_type == "lines") {
     mesh->setPrimitiveType(Qt3DRender::QGeometryRenderer::Lines);
-  } else if (primType == "points") {
+  } else if (prim_type == "points") {
     mesh->setPrimitiveType(Qt3DRender::QGeometryRenderer::Points);
   }
   QColor lineMaterial(setts->value("line material").toString());
   line_material->setAmbient(lineMaterial);
   object->addComponent(line_material);
-  QColor backgroundColor(setts->value("background color").toString());
-  view->defaultFrameGraph()->setClearColor(backgroundColor);
+  QColor background_color_button_(setts->value("background color").toString());
+  view->defaultFrameGraph()->setClearColor(background_color_button_);
   setts->sync();
 }
 
-void SettingsWindow::add_move_sliders(Qt3DCore::QTransform *transform) {
-  moveXlabel->setMaximumSize(150, 15);
-  moveYlabel->setMaximumSize(150, 15);
-  moveZlabel->setMaximumSize(150, 15);
-  moveX->setRange(-100, 100);  // задаем диапазон слайдера
-  moveX->setTickInterval(1);  // интервал изменения значения слайдера
-  moveY->setRange(-100, 100);
-  moveY->setTickInterval(1);
-  moveZ->setRange(-100, 100);
-  moveZ->setTickInterval(1);
-  QHBoxLayout *xLayout = new QHBoxLayout();
-  xLayout->addWidget(moveX);
-  xLayout->addWidget(lineEditX);
-  QHBoxLayout *yLayout = new QHBoxLayout();
-  yLayout->addWidget(moveY);
-  yLayout->addWidget(lineEditY);
-  QHBoxLayout *zLayout = new QHBoxLayout();
-  zLayout->addWidget(moveZ);
-  zLayout->addWidget(lineEditZ);
-  layout->addWidget(moveXlabel);
-  layout->addLayout(xLayout);
-  layout->addWidget(moveYlabel);
-  layout->addLayout(yLayout);
-  layout->addWidget(moveZlabel);
-  layout->addLayout(zLayout);
-  MOVE_MACRO(moveX, lineEditX)
-  MOVE_MACRO(moveY, lineEditY)
-  MOVE_MACRO(moveZ, lineEditZ)
+void SettingsWindow::AddMoveSliders(Qt3DCore::QTransform *transform) {
+  move_x_label_->setMaximumSize(150, 15);
+  move_y_label_->setMaximumSize(150, 15);
+  move_z_label_->setMaximumSize(150, 15);
+  move_x_->setRange(-100, 100);  // задаем диапазон слайдера
+  move_x_->setTickInterval(1);  // интервал изменения значения слайдера
+  move_y_->setRange(-100, 100);
+  move_y_->setTickInterval(1);
+  move_z_->setRange(-100, 100);
+  move_z_->setTickInterval(1);
+  QHBoxLayout *x_layout = new QHBoxLayout();
+  x_layout->addWidget(move_x_);
+  x_layout->addWidget(line_edit_x_);
+  QHBoxLayout *y_layout = new QHBoxLayout();
+  y_layout->addWidget(move_y_);
+  y_layout->addWidget(line_edit_y_);
+  QHBoxLayout *z_layout = new QHBoxLayout();
+  z_layout->addWidget(move_z_);
+  z_layout->addWidget(line_edit_z_);
+  layout_->addWidget(move_x_label_);
+  layout_->addLayout(x_layout);
+  layout_->addWidget(move_y_label_);
+  layout_->addLayout(y_layout);
+  layout_->addWidget(move_z_label_);
+  layout_->addLayout(z_layout);
+  MOVE_MACRO(move_x_, line_edit_x_)
+  MOVE_MACRO(move_y_, line_edit_y_)
+  MOVE_MACRO(move_z_, line_edit_z_)
 }
 
-void SettingsWindow::add_rotate_sliders(Qt3DCore::QTransform *transform) {
-  rotateXlabel->setMaximumSize(150, 15);
-  rotateYlabel->setMaximumSize(150, 15);
-  rotateZlabel->setMaximumSize(150, 15);
-  rotateX->setRange(0, 360);
-  rotateX->setTickInterval(1);
-  rotateY->setRange(0, 360);
-  rotateY->setTickInterval(1);
-  rotateZ->setRange(0, 360);
-  rotateZ->setTickInterval(1);
-  QHBoxLayout *xLayout = new QHBoxLayout();
-  xLayout->addWidget(rotateX);
-  xLayout->addWidget(lineEditRX);
-  QHBoxLayout *yLayout = new QHBoxLayout();
-  yLayout->addWidget(rotateY);
-  yLayout->addWidget(lineEditRY);
-  QHBoxLayout *zLayout = new QHBoxLayout();
-  zLayout->addWidget(rotateZ);
-  zLayout->addWidget(lineEditRZ);
-  layout->addWidget(rotateXlabel);
-  layout->addLayout(xLayout);
-  layout->addWidget(rotateYlabel);
-  layout->addLayout(yLayout);
-  layout->addWidget(rotateZlabel);
-  layout->addLayout(zLayout);
-  ROTATE_MACRO(rotateX, lineEditRX, setRotationX)
-  ROTATE_MACRO(rotateY, lineEditRY, setRotationY)
-  ROTATE_MACRO(rotateZ, lineEditRZ, setRotationZ)
+void SettingsWindow::AddRotateSliders(Qt3DCore::QTransform *transform) {
+  rotate_x_label_->setMaximumSize(150, 15);
+  rotate_y_label_->setMaximumSize(150, 15);
+  rotate_z_label_->setMaximumSize(150, 15);
+  rotate_x_->setRange(0, 360);
+  rotate_x_->setTickInterval(1);
+  rotate_y_->setRange(0, 360);
+  rotate_y_->setTickInterval(1);
+  rotate_z_->setRange(0, 360);
+  rotate_z_->setTickInterval(1);
+  QHBoxLayout *x_layout = new QHBoxLayout();
+  x_layout->addWidget(rotate_x_);
+  x_layout->addWidget(line_edit_rx_);
+  QHBoxLayout *y_layout = new QHBoxLayout();
+  y_layout->addWidget(rotate_y_);
+  y_layout->addWidget(line_edit_ry_);
+  QHBoxLayout *z_layout = new QHBoxLayout();
+  z_layout->addWidget(rotate_z_);
+  z_layout->addWidget(line_edit_rz_);
+  layout_->addWidget(rotate_x_label_);
+  layout_->addLayout(x_layout);
+  layout_->addWidget(rotate_y_label_);
+  layout_->addLayout(y_layout);
+  layout_->addWidget(rotate_z_label_);
+  layout_->addLayout(z_layout);
+  ROTATE_MACRO(rotate_x_, line_edit_rx_, setRotationX)
+  ROTATE_MACRO(rotate_y_, line_edit_ry_, setRotationY)
+  ROTATE_MACRO(rotate_z_, line_edit_rz_, setRotationZ)
 }
 
-void SettingsWindow::add_scale_slider(Qt3DRender::QCamera *cameraObj) {
-  scaleObjectLabel->setMaximumSize(150, 20);
-  layout->addWidget(scaleObjectLabel);
-  scaleObject->setRange(-1000, 1000);
-  scaleObject->setValue(0);
-  QHBoxLayout *xLayout = new QHBoxLayout();
-  xLayout->addWidget(scaleObject);
-  xLayout->addWidget(scaleEdit);
-  layout->addLayout(xLayout);
-  connect(scaleObject, &QSlider::valueChanged, this,
-          [this, cameraObj](int value) {
-            QVector3D cameraPosition = cameraObj->position();
-            QVector3D viewCenter = cameraObj->viewCenter();
-            QVector3D direction = cameraPosition - viewCenter;
+void SettingsWindow::AddScaleSliders(Qt3DRender::QCamera *camera_obj) {
+  scale_object_label_->setMaximumSize(150, 20);
+  layout_->addWidget(scale_object_label_);
+  scale_object_->setRange(-1000, 1000);
+  scale_object_->setValue(0);
+  QHBoxLayout *x_layout = new QHBoxLayout();
+  x_layout->addWidget(scale_object_);
+  x_layout->addWidget(scale_edit_);
+  layout_->addLayout(x_layout);
+  connect(scale_object_, &QSlider::valueChanged, this,
+          [this, camera_obj](int value) {
+            QVector3D camera_position = camera_obj->position();
+            QVector3D view_center = camera_obj->viewCenter();
+            QVector3D direction = camera_position - view_center;
             direction.normalize();
-            float scaleFactor = std::pow(1.01f, value);
-            cameraObj->setPosition(viewCenter + direction * scaleFactor);
-            scaleEdit->setText(QString::number(value));
+            float scale_factor = std::pow(1.01f, value);
+            camera_obj->setPosition(view_center + direction * scale_factor);
+            scale_edit_->setText(QString::number(value));
           });
-  connect(scaleEdit, &QLineEdit::returnPressed, this, [this, cameraObj]() {
-    QVector3D cameraPosition = cameraObj->position();
-    QVector3D viewCenter = cameraObj->viewCenter();
-    QVector3D direction = cameraPosition - viewCenter;
+  connect(scale_edit_, &QLineEdit::returnPressed, this, [this, camera_obj]() {
+    QVector3D camera_position = camera_obj->position();
+    QVector3D view_center = camera_obj->viewCenter();
+    QVector3D direction = camera_position - view_center;
     direction.normalize();
-    float scaleFactor = std::pow(1.01f, scaleEdit->text().toFloat());
-    cameraObj->setPosition(viewCenter + direction * scaleFactor);
+    float scale_factor = std::pow(1.01f, scale_edit_->text().toFloat());
+    camera_obj->setPosition(view_center + direction * scale_factor);
   });
 }
 
-void SettingsWindow::projection_settings(Qt3DRender::QCamera *cameraObj,
-                                         Qt3DExtras::Qt3DWindow *view) {
-  QLabel *projLabel = new QLabel("Select projection:", this);
-  QRadioButton *parallelProjectionRadioButton =
+void SettingsWindow::ProjectionSettings(Qt3DRender::QCamera *camera_obj,
+                                        Qt3DExtras::Qt3DWindow *view) {
+  QLabel *proj_label = new QLabel("Select projection:", this);
+  QRadioButton *parallel_projection_radio_button =
       new QRadioButton("Parallel projection", this);
-  QRadioButton *centralProjectionRadioButton =
+  QRadioButton *central_projection_radio_button =
       new QRadioButton("Central projection", this);
-  QHBoxLayout *hLayout = new QHBoxLayout();
-  hLayout->addWidget(parallelProjectionRadioButton);
-  hLayout->addWidget(centralProjectionRadioButton);
-  layout->addWidget(projLabel);
-  layout->addLayout(hLayout);
-  connect(parallelProjectionRadioButton, &QRadioButton::clicked, this, [=]() {
-    float aspectRatio = float(view->width()) / view->height();
-    cameraObj->lens()->setOrthographicProjection(-aspectRatio, aspectRatio,
-                                                 -1.0, 1.0, 0.1f, 10000.0f);
-  });
-  connect(centralProjectionRadioButton, &QRadioButton::clicked, this, [=]() {
-    float aspectRatio = float(view->width()) / view->height();
-    cameraObj->lens()->setPerspectiveProjection(45.0f, aspectRatio, 0.1f,
-                                                10000.0f);
+  QHBoxLayout *h_layout = new QHBoxLayout();
+  h_layout->addWidget(parallel_projection_radio_button);
+  h_layout->addWidget(central_projection_radio_button);
+  layout_->addWidget(proj_label);
+  layout_->addLayout(h_layout);
+  connect(parallel_projection_radio_button, &QRadioButton::clicked, this,
+          [=]() {
+            float aspect_ratio = float(view->width()) / view->height();
+            camera_obj->lens()->setOrthographicProjection(
+                -aspect_ratio, aspect_ratio, -1.0, 1.0, 0.1f, 10000.0f);
+          });
+  connect(central_projection_radio_button, &QRadioButton::clicked, this, [=]() {
+    float aspect_ratio = float(view->width()) / view->height();
+    camera_obj->lens()->setPerspectiveProjection(45.0f, aspect_ratio, 0.1f,
+                                                 10000.0f);
   });
 }
 
-void SettingsWindow::line_type_settings(Qt3DRender::QMesh *mesh) {
-  typeLabel = new QLabel("Select line type:", this);
-  lineTypeRadioButton = new QRadioButton("Solid line", this);
-  dotTypeRadioButton = new QRadioButton("Dotted line", this);
-  LineTypeLayout = new QHBoxLayout();
-  LineTypeLayout->addWidget(lineTypeRadioButton);
-  LineTypeLayout->addWidget(dotTypeRadioButton);
-  layout->addWidget(typeLabel);
-  layout->addLayout(LineTypeLayout);
-  connect(lineTypeRadioButton, &QRadioButton::clicked, this, [=]() {
+void SettingsWindow::LineTypeSettings(Qt3DRender::QMesh *mesh) {
+  type_label_ = new QLabel("Select line type:", this);
+  line_type_radio_button_ = new QRadioButton("Solid line", this);
+  dot_type_radio_button_ = new QRadioButton("Dotted line", this);
+  line_type_layout_ = new QHBoxLayout();
+  line_type_layout_->addWidget(line_type_radio_button_);
+  line_type_layout_->addWidget(dot_type_radio_button_);
+  layout_->addWidget(type_label_);
+  layout_->addLayout(line_type_layout_);
+  connect(line_type_radio_button_, &QRadioButton::clicked, this, [=]() {
     mesh->setPrimitiveType(Qt3DRender::QGeometryRenderer::Lines);
   });
-  connect(dotTypeRadioButton, &QRadioButton::clicked, this, [=]() {
+  connect(dot_type_radio_button_, &QRadioButton::clicked, this, [=]() {
     mesh->setPrimitiveType(Qt3DRender::QGeometryRenderer::Points);
   });
 }
 
-void SettingsWindow::line_color_settings(
+void SettingsWindow::LineColorSettings(
     Qt3DCore::QEntity *object,
     Qt3DExtras::QDiffuseSpecularMaterial *line_material) {
-  layout->addWidget(lineColor);
-  connect(lineColor, &QPushButton::clicked, this, [=]() {
-    line_color = QColorDialog::getColor(Qt::white, this, "Choose line color");
-    if (line_color.isValid()) {
-      line_material->setAmbient(line_color);
+  layout_->addWidget(line_color_button_);
+  connect(line_color_button_, &QPushButton::clicked, this, [=]() {
+    line_color_ = QColorDialog::getColor(Qt::white, this, "Choose line color");
+    if (line_color_.isValid()) {
+      line_material->setAmbient(line_color_);
       object->addComponent(line_material);
     }
   });
 }
 
-void SettingsWindow::background_settings(Qt3DExtras::Qt3DWindow *view) {
-  layout->addWidget(backgroundColor);
-  connect(backgroundColor, &QPushButton::clicked, this, [=]() {
-    background_color =
+void SettingsWindow::BackgroundSettings(Qt3DExtras::Qt3DWindow *view) {
+  layout_->addWidget(background_color_button_);
+  connect(background_color_button_, &QPushButton::clicked, this, [=]() {
+    background_color_ =
         QColorDialog::getColor(Qt::white, this, "Choose background color");
-    if (background_color.isValid()) {
-      view->defaultFrameGraph()->setClearColor(QColor(background_color));
+    if (background_color_.isValid()) {
+      view->defaultFrameGraph()->setClearColor(QColor(background_color_));
     }
   });
 }

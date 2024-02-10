@@ -1,6 +1,6 @@
 #include "auxiliary_modules.h"
 
-void move(float x, float y, float z, S21Matrix &cur_point, S21Matrix &result) {
+void Move(float x, float y, float z, S21Matrix &cur_point, S21Matrix &result) {
   S21Matrix move_matrix(4, 4);
   move_matrix(0, 0) = move_matrix(1, 1) = move_matrix(2, 2) =
       move_matrix(3, 3) = 1;
@@ -11,7 +11,7 @@ void move(float x, float y, float z, S21Matrix &cur_point, S21Matrix &result) {
   result = move_matrix * cur_point;
 }
 
-void rotate(float x, float y, float z, S21Matrix &cur_point,
+void Rotate(float x, float y, float z, S21Matrix &cur_point,
             S21Matrix &result) {
   S21Matrix rotate_matrix(4, 4);
   for (int i = 0, j = 0; i < rotate_matrix.getRows(); i++, j++) {
@@ -37,7 +37,7 @@ void rotate(float x, float y, float z, S21Matrix &cur_point,
   result = rotate_matrix * cur_point;
 }
 
-void scale(float x, float y, float z, S21Matrix &cur_point, S21Matrix &result) {
+void Scale(float x, float y, float z, S21Matrix &cur_point, S21Matrix &result) {
   S21Matrix scale_matrix(4, 4);
   scale_matrix(0, 0) = x;
   scale_matrix(1, 1) = y;

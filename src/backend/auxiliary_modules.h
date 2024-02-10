@@ -28,11 +28,11 @@ struct Object {
   Object() : num_of_polygons(0), num_of_vertices(0) {}
 };
 
-void move(float x, float y, float z, S21Matrix &cur_point, S21Matrix &result);
-void rotate(float x, float y, float z, S21Matrix &cur_point, S21Matrix &result);
-void scale(float x, float y, float z, S21Matrix &cur_point, S21Matrix &result);
+void Move(float x, float y, float z, S21Matrix &cur_point, S21Matrix &result);
+void Rotate(float x, float y, float z, S21Matrix &cur_point, S21Matrix &result);
+void Scale(float x, float y, float z, S21Matrix &cur_point, S21Matrix &result);
 
-int parser_counter(std::ifstream &file, Object &object);
-void object_parser(std::ifstream &file, Object &object);
+int ParserCounter(std::ifstream &file, Object &object);
+void ObjectParser(std::ifstream &file, Object &object);
 
 #endif  // AUXILIARY_MODULES_H

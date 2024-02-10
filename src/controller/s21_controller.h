@@ -1,14 +1,15 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#include "../backend/auxiliary_modules.h"
 #include <string>
 
-class Controller {
-public:
-    Controller();
+#include "../backend/auxiliary_modules.h"
 
-    void startParsing(const std::string &filename, Object &objInfo);
+class Controller {
+ public:
+  Controller();
+
+  void StartParsing(const std::string &filename, Object &objInfo);
 };
 
-#endif // CONTROLLER_H
+#endif  // CONTROLLER_H

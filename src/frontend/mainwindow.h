@@ -25,49 +25,44 @@ class MainWindow : public QMainWindow {
  public:
   MainWindow(QWidget *parent = nullptr);
   ~MainWindow();
-  void open_object_file(Qt3DExtras::Qt3DWindow *, QLineEdit *,
-                        QPushButton *);                          //
-  void object_info(const Object &object, const char *filename);  //
-  void settings(Qt3DExtras::Qt3DWindow *);                       //
+  void OpenObjectFile(Qt3DExtras::Qt3DWindow *view, QLineEdit *lineEdit,
+                      QPushButton *button);
+  void ObjectInfo(const Object &object, const char *filename);
+  void Settings(Qt3DExtras::Qt3DWindow *view);
 
-  void start_parsing(const std::string &filename, Object &objInfo);
-  void image_render();
+  void ImageRender();
   void UpdateView(QString &filename);
 
   void CreateGif();
   void CaptureFrameForGif();
 
  private:
-  Ui::MainWindow *ui;
-  Controller *controller;
-  Qt3DCore::QEntity *parentWin = nullptr;    // корневое окно
-  Qt3DRender::QCamera *cameraObj = nullptr;  // камера
-  Qt3DCore::QEntity *sceneLoader = nullptr;  // базовая сущность
-  Qt3DRender::QSceneLoader *loader = nullptr;  // для загрузки файлов
-  Qt3DRender::QMesh *mesh = nullptr;
-  Qt3DCore::QEntity *object = nullptr;
-  Qt3DCore::QTransform *transform = nullptr;
-  QVBoxLayout *layout = nullptr;
-  QPushButton *settingsButton = nullptr;
-  Qt3DRender::QRenderCapture *capture;
-  SettingsWindow *settingsWin;
-  Qt3DRender::QRenderCaptureReply *captureReply;
-  Qt3DExtras::Qt3DWindow *view;
-  QWidget *widget;
-  QSettings re_settings;
-  Qt3DExtras::QDiffuseSpecularMaterial *line_material;
-  Object objInfo;
-  QLabel *fileLabel = nullptr;
-  QLabel *verticesLabel = nullptr;
-  QLabel *polygonsLabel = nullptr;
-  QString prevModel;
-  bool settings_flag = false;
+  Ui::MainWindow *ui_;
+  Controller *controller_;
+  Qt3DCore::QEntity *parent_win_ = nullptr;    // корневое окно
+  Qt3DRender::QCamera *camera_obj_ = nullptr;  // камера
+  Qt3DRender::QMesh *mesh_ = nullptr;
+  Qt3DCore::QEntity *entity_object_ = nullptr;
+  Qt3DCore::QTransform *transform_ = nullptr;
+  QVBoxLayout *layout_ = nullptr;
+  QPushButton *settings_button_ = nullptr;
+  SettingsWindow *settings_win_;
+  Qt3DExtras::Qt3DWindow *view_;
+  QWidget *widget_;
+  QSettings re_settings_;
+  Qt3DExtras::QDiffuseSpecularMaterial *line_material_;
+  Object object_info_;
+  QLabel *file_label_ = nullptr;
+  QLabel *vertices_label_ = nullptr;
+  QLabel *polygons_label_ = nullptr;
+  QString previous_model_;
+  bool settings_flag_ = false;
 
-  QTimer *gifTimer;
-  QGifImage gif;
-  int frameCount;
-  QString gifFileName;
-  int fps = 15;
-  int gif_time = 5;
+  QTimer *gif_timer_;
+  QGifImage gif_image_;
+  int frame_count_;
+  QString gif_file_name_;
+  int fps_ = 15;
+  int gif_time_ = 5;
 };
 #endif  // MAINWINDOW_H

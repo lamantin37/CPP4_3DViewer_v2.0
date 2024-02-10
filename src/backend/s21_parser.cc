@@ -6,7 +6,7 @@
 
 #include "auxiliary_modules.h"
 
-int parser_counter(std::ifstream &file, Object &object) {
+int ParserCounter(std::ifstream &file, Object &object) {
   file.clear();
   file.seekg(0, std::ios::beg);
   std::string line;
@@ -24,7 +24,7 @@ int parser_counter(std::ifstream &file, Object &object) {
   return object.num_of_vertices;
 }
 
-void object_parser(std::ifstream &file, Object &object) {
+void ObjectParser(std::ifstream &file, Object &object) {
   file.clear();
   file.seekg(0, std::ios::beg);
 
