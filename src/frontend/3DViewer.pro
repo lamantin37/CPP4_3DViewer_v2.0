@@ -5,6 +5,8 @@ CONFIG += \
         c++17
 DEFINES += QT_DEPRECATED_WARNINGS
 
+include(QtGifImage/src/gifimage/qtgifimage.pri)
+
 SOURCES += \
     ../backend/s21_matrix/s21_matrix_oop_operations.cc \
     ../backend/s21_matrix/s21_matrix_oop_operators.cc \
@@ -15,7 +17,6 @@ SOURCES += \
     mainwindow.cc \
     settingswindow.cc \
     ../main.cc
-
 HEADERS += \
     ../backend/auxiliary_modules.h \
     ../backend/s21_matrix/s21_matrix_oop.h \

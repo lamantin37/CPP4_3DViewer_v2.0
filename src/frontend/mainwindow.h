@@ -10,6 +10,7 @@
 #include <QScreen>
 
 #include "../controller/s21_controller.h"
+#include "qgifimage.h"
 #include "settingswindow.h"
 
 QT_BEGIN_NAMESPACE
@@ -32,6 +33,9 @@ class MainWindow : public QMainWindow {
   void start_parsing(const std::string &filename, Object &objInfo);
   void image_render();
   void UpdateView(QString &filename);
+
+  void CreateGif();
+  void CaptureFrameForGif();
 
  private:
   Ui::MainWindow *ui;
@@ -58,5 +62,12 @@ class MainWindow : public QMainWindow {
   QLabel *polygonsLabel = nullptr;
   QString prevModel;
   bool settings_flag = false;
+
+  QTimer *gifTimer;
+  QGifImage gif;
+  int frameCount;
+  QString gifFileName;
+  int fps = 15;
+  int gif_time = 5;
 };
 #endif  // MAINWINDOW_H

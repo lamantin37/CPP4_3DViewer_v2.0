@@ -26,11 +26,17 @@ MainWindow::MainWindow(QWidget *parent)
   QPushButton *button = new QPushButton("Choose file", this);
   QLineEdit *lineEdit = new QLineEdit(this);
 
+  QPushButton *createGifButton = new QPushButton("Create GIF", this);
+  connect(createGifButton, &QPushButton::clicked, this, &MainWindow::CreateGif);
+  gifTimer = new QTimer(this);
+  connect(gifTimer, &QTimer::timeout, this, &MainWindow::CaptureFrameForGif);
+
   layout = new QVBoxLayout();  // добавление виджета, кнопки и
                                // текстового поля в лейаут
   layout->addWidget(widget);
   layout->addWidget(button);
   layout->addWidget(lineEdit);
+  layout->addWidget(createGifButton);
   this->centralWidget()->setLayout(
       layout);  // установка его в качестве центрального виджета
 
@@ -177,4 +183,24 @@ void MainWindow::UpdateView(QString &filename) {
   const std::string charstring = filename.toStdString();
   start_parsing(charstring, objInfo);
   settings(view);
+}
+
+void MainWindow::CreateGif() {
+  gifFileName = QFileDialog::getSaveFileName(this, "Save GIF", "", "(*.gif)");
+  if (!gifFileName.isEmpty()) {
+    gif.setDefaultDelay(1000 / fps);
+    frameCount = 0;
+    gifTimer->start(1000 / fps);
+  }
+}
+
+void MainWindow::CaptureFrameForGif() {
+  if (frameCount < gif_time * fps) {
+    QPixmap screenshot = view->screen()->grabWindow(view->winId());
+    gif.addFrame(screenshot.toImage());
+    frameCount++;
+  } else {
+    gifTimer->stop();
+    gif.save(gifFileName);
+  }
 }
