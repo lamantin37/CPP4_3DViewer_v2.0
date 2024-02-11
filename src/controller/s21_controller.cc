@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 
+namespace s21 {
 void Controller::StartParsing(const std::string &filename,
                               Object &object_info) {
   std::ifstream file(filename);
@@ -10,6 +11,7 @@ void Controller::StartParsing(const std::string &filename,
     std::cerr << "Error opening file\n";
     return;
   }
-  ParserCounter(file, object_info);
-  ObjectParser(file, object_info);
+  auxiliary_modules->ParserCounter(file, object_info);
+  auxiliary_modules->ObjectParser(file, object_info);
 }
+}  // namespace s21

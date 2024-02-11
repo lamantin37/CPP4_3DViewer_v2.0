@@ -13,6 +13,7 @@
 #include "qgifimage.h"
 #include "settingswindow.h"
 
+namespace s21 {
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -62,4 +63,5 @@ class MainWindow : public QMainWindow {
   QTimer *gif_timer_;
   QGifImage gif_image_;
 };
+}  // namespace s21
 #endif  // CPP4_3DVIEWER_V2_0_1_FRONTEND_MAINWINDOW_H_

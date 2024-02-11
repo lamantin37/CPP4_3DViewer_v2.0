@@ -6,7 +6,8 @@
 
 #include "auxiliary_modules.h"
 
-int ParserCounter(std::ifstream &file, Object &object) {
+namespace s21 {
+int AuxiliaryModules::ParserCounter(std::ifstream &file, Object &object) {
   file.clear();
   file.seekg(0, std::ios::beg);
   std::string line;
@@ -24,7 +25,7 @@ int ParserCounter(std::ifstream &file, Object &object) {
   return object.num_of_vertices;
 }
 
-void ObjectParser(std::ifstream &file, Object &object) {
+void AuxiliaryModules::ObjectParser(std::ifstream &file, Object &object) {
   file.clear();
   file.seekg(0, std::ios::beg);
 
@@ -52,3 +53,4 @@ void ObjectParser(std::ifstream &file, Object &object) {
     }
   }
 }
+}  // namespace s21

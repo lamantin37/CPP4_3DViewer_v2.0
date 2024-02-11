@@ -1,5 +1,6 @@
 #include "settingswindow.h"
 
+namespace s21 {
 SettingsWindow::SettingsWindow(QWidget *parent) : QWidget(parent) {
   setWindowFlags(Qt::Window);
   setFixedSize(QSize(400, 600));
@@ -267,3 +268,4 @@ void SettingsWindow::BackgroundSettings(Qt3DExtras::Qt3DWindow *view) {
       view->defaultFrameGraph()->setClearColor(QColor(background_color_));
   });
 }
+}  // namespace s21

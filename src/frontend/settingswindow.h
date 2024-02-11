@@ -17,6 +17,7 @@
 
 #include "../backend/auxiliary_modules.h"
 
+namespace s21 {
 class SettingsWindow : public QWidget {
   Q_OBJECT
  public:
@@ -108,5 +109,6 @@ class SettingsWindow : public QWidget {
   QRadioButton *dot_type_radio_button_ = nullptr;
   QHBoxLayout *line_type_layout_;
 };
+}  // namespace s21
 
 #endif  // CPP4_3DVIEWER_V2_0_1_FRONTEND_SETTINGSWINDOW_H_

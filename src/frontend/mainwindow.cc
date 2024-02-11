@@ -3,6 +3,8 @@
 #include <Qt3DRender/QRenderCapture>
 
 #include "./ui_mainwindow.h"
+
+namespace s21 {
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
       ui_(new Ui::MainWindow),
@@ -210,3 +212,4 @@ void MainWindow::CaptureFrameForGif() {
     gif_image_.save(gif_file_name_);
   }
 }
+}  // namespace s21
