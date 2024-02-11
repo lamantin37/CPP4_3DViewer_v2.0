@@ -1,5 +1,5 @@
-#ifndef SETTINGSWINDOW_H
-#define SETTINGSWINDOW_H
+#ifndef CPP4_3DVIEWER_V2_0_1_FRONTEND_SETTINGSWINDOW_H_
+#define CPP4_3DVIEWER_V2_0_1_FRONTEND_SETTINGSWINDOW_H_
 #include <QApplication>
 #include <QColorDialog>
 #include <QFileDialog>
@@ -16,36 +16,6 @@
 #include <Qt3DRender>
 
 #include "../backend/auxiliary_modules.h"
-
-#define ROTATE_MACRO(SLIDER, LINE_EDIT, ROTATION)             \
-  connect(SLIDER, &QSlider::valueChanged, this, [=]() {       \
-    float angle = SLIDER->value();                            \
-    transform->ROTATION(angle);                               \
-    LINE_EDIT->setText(QString::number(angle));               \
-  });                                                         \
-                                                              \
-  connect(LINE_EDIT, &QLineEdit::returnPressed, this, [=]() { \
-    float angle = LINE_EDIT->text().toFloat();                \
-    transform->ROTATION(angle);                               \
-    SLIDER->setValue(angle);                                  \
-  });
-
-#define MOVE_MACRO(SLIDER, LINE_EDIT)                         \
-  connect(SLIDER, &QSlider::valueChanged, this, [=]() {       \
-    float x = move_x_->value();                               \
-    float y = move_y_->value();                               \
-    float z = move_z_->value();                               \
-    transform->setTranslation(QVector3D(x, y, z));            \
-    LINE_EDIT->setText(QString::number(SLIDER->value()));     \
-  });                                                         \
-                                                              \
-  connect(LINE_EDIT, &QLineEdit::returnPressed, this, [=]() { \
-    float x = move_x_->value();                               \
-    float y = move_y_->value();                               \
-    float z = move_z_->value();                               \
-    transform->setTranslation(QVector3D(x, y, z));            \
-    SLIDER->setValue(LINE_EDIT->text().toFloat());            \
-  });
 
 class SettingsWindow : public QWidget {
   Q_OBJECT
@@ -68,6 +38,38 @@ class SettingsWindow : public QWidget {
                     Qt3DRender::QMesh *mesh, Qt3DExtras::Qt3DWindow *view,
                     Qt3DCore::QEntity *object,
                     Qt3DExtras::QDiffuseSpecularMaterial *line_material);
+  void connectRotateSlider(
+      QSlider *slider, QLineEdit *lineEdit, Qt3DCore::QTransform *transform,
+      void (Qt3DCore::QTransform::*rotationFunction)(float)) {
+    connect(slider, &QSlider::valueChanged, this, [=]() {
+      float angle = slider->value();
+      (transform->*rotationFunction)(angle);
+      lineEdit->setText(QString::number(angle));
+    });
+
+    connect(lineEdit, &QLineEdit::returnPressed, this, [=]() {
+      float angle = lineEdit->text().toFloat();
+      (transform->*rotationFunction)(angle);
+      slider->setValue(angle);
+    });
+  }
+
+  void connectMoveSlider(QSlider *slider, QLineEdit *lineEdit,
+                         Qt3DCore::QTransform *transform, int axis) {
+    connect(slider, &QSlider::valueChanged, this, [=]() {
+      QVector3D translation = transform->translation();
+      translation[axis] = slider->value();
+      transform->setTranslation(translation);
+      lineEdit->setText(QString::number(slider->value()));
+    });
+
+    connect(lineEdit, &QLineEdit::returnPressed, this, [=]() {
+      QVector3D translation = transform->translation();
+      translation[axis] = lineEdit->text().toFloat();
+      transform->setTranslation(translation);
+      slider->setValue(translation[axis]);
+    });
+  }
 
  private:
   QVBoxLayout *layout_ = nullptr;
@@ -107,4 +109,4 @@ class SettingsWindow : public QWidget {
   QHBoxLayout *line_type_layout_;
 };
 
-#endif  // SETTINGSWINDOW_H
+#endif  // CPP4_3DVIEWER_V2_0_1_FRONTEND_SETTINGSWINDOW_H_

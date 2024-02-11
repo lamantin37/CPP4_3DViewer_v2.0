@@ -57,13 +57,15 @@ void SettingsWindow::SaveSettings(
              Qt3DRender::QCameraLens::OrthographicProjection) {
     setts->setValue("projection", "central");
   }
-  Qt3DRender::QGeometryRenderer::PrimitiveType primitive_type =
-      mesh->primitiveType();
-  if (primitive_type == Qt3DRender::QGeometryRenderer::PrimitiveType::Lines) {
-    setts->setValue("line type", "lines");
-  } else if (primitive_type ==
-             Qt3DRender::QGeometryRenderer::PrimitiveType::Points) {
-    setts->setValue("line type", "points");
+  if (mesh) {
+    Qt3DRender::QGeometryRenderer::PrimitiveType primitive_type =
+        mesh->primitiveType();
+    if (primitive_type == Qt3DRender::QGeometryRenderer::PrimitiveType::Lines) {
+      setts->setValue("line type", "lines");
+    } else if (primitive_type ==
+               Qt3DRender::QGeometryRenderer::PrimitiveType::Points) {
+      setts->setValue("line type", "points");
+    }
   }
   QColor line_clr = QColor(Qt::black);
   if (line_material->ambient() != QColor(Qt::black))
@@ -127,9 +129,9 @@ void SettingsWindow::AddMoveSliders(Qt3DCore::QTransform *transform) {
   layout_->addLayout(y_layout);
   layout_->addWidget(move_z_label_);
   layout_->addLayout(z_layout);
-  MOVE_MACRO(move_x_, line_edit_x_)
-  MOVE_MACRO(move_y_, line_edit_y_)
-  MOVE_MACRO(move_z_, line_edit_z_)
+  connectMoveSlider(move_x_, line_edit_x_, transform, 0);
+  connectMoveSlider(move_y_, line_edit_y_, transform, 1);
+  connectMoveSlider(move_z_, line_edit_z_, transform, 2);
 }
 
 void SettingsWindow::AddRotateSliders(Qt3DCore::QTransform *transform) {
@@ -157,9 +159,12 @@ void SettingsWindow::AddRotateSliders(Qt3DCore::QTransform *transform) {
   layout_->addLayout(y_layout);
   layout_->addWidget(rotate_z_label_);
   layout_->addLayout(z_layout);
-  ROTATE_MACRO(rotate_x_, line_edit_rx_, setRotationX)
-  ROTATE_MACRO(rotate_y_, line_edit_ry_, setRotationY)
-  ROTATE_MACRO(rotate_z_, line_edit_rz_, setRotationZ)
+  connectRotateSlider(rotate_x_, line_edit_rx_, transform,
+                      &Qt3DCore::QTransform::setRotationX);
+  connectRotateSlider(rotate_y_, line_edit_ry_, transform,
+                      &Qt3DCore::QTransform::setRotationY);
+  connectRotateSlider(rotate_z_, line_edit_rz_, transform,
+                      &Qt3DCore::QTransform::setRotationZ);
 }
 
 void SettingsWindow::AddScaleSliders(Qt3DRender::QCamera *camera_obj) {

@@ -1,15 +1,10 @@
-#ifndef AUXILIARY_MODULES_H
-#define AUXILIARY_MODULES_H
+#ifndef CPP4_3DVIEWER_V2_0_1_BACKEND_AUXILIARY_MODULES_H_
+#define CPP4_3DVIEWER_V2_0_1_BACKEND_AUXILIARY_MODULES_H_
 
 #include <cmath>
 #include <fstream>
 
 #include "s21_matrix/s21_matrix_oop.h"
-
-constexpr int POLYGON_SIZE = 3;
-constexpr int OK = 0;
-constexpr int MATRIX_ERROR = 1;
-constexpr int CALC_ERROR = 2;
 
 struct Vertex {
   double x, y, z;
@@ -35,4 +30,4 @@ void Scale(float x, float y, float z, S21Matrix &cur_point, S21Matrix &result);
 int ParserCounter(std::ifstream &file, Object &object);
 void ObjectParser(std::ifstream &file, Object &object);
 
-#endif  // AUXILIARY_MODULES_H
+#endif  // CPP4_3DVIEWER_V2_0_1_BACKEND_AUXILIARY_MODULES_H_

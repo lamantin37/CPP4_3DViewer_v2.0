@@ -3,14 +3,13 @@
 #include <fstream>
 #include <iostream>
 
-Controller::Controller() {}
-
-void Controller::StartParsing(const std::string &filename, Object &objInfo) {
+void Controller::StartParsing(const std::string &filename,
+                              Object &object_info) {
   std::ifstream file(filename);
   if (!file.is_open()) {
     std::cerr << "Error opening file\n";
     return;
   }
-  ParserCounter(file, objInfo);
-  ObjectParser(file, objInfo);
+  ParserCounter(file, object_info);
+  ObjectParser(file, object_info);
 }

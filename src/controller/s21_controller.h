@@ -1,5 +1,5 @@
-#ifndef CONTROLLER_H
-#define CONTROLLER_H
+#ifndef CPP4_3DVIEWER_V2_0_1_CONTROLLER_S21_CONTROLLER_H_
+#define CPP4_3DVIEWER_V2_0_1_CONTROLLER_S21_CONTROLLER_H_
 
 #include <string>
 
@@ -7,9 +7,9 @@
 
 class Controller {
  public:
-  Controller();
+  Controller() = default;
 
-  void StartParsing(const std::string &filename, Object &objInfo);
+  void StartParsing(const std::string &filename, Object &object_info);
 };
 
-#endif  // CONTROLLER_H
+#endif  // CPP4_3DVIEWER_V2_0_1_CONTROLLER_S21_CONTROLLER_H_
