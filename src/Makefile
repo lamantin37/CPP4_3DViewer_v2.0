@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -Wall -Werror -Wextra -std=c++17
+CFLAGS = -std=c++17
 SOURCE_BACKEND = $(wildcard ./backend/*.cc)
 SOURCE_FRONTEND = $(wildcard ./frontend/*.cc)
 HEADERS_BACKEND = $(wildcard ./backend/*.h)
@@ -7,8 +7,8 @@ HEADERS_FRONTEND = $(wildcard ./frontend/*.h)
 MATRIX_FILES = $(wildcard ./backend/s21_matrix/*.cc ./backend/s21_matrix/*.h)
 TESTS = $(wildcard test_3dviewer.cc)
 OBJECTS = $(patsubst %.cc,%.o, ${SOURCE})
-QMAKE_PATH = /usr/bin/qmake
-BUILD_SRC = /build-3DViewer-Desktop_Qt_5_12_12_GCC_64bit-Debug/
+QMAKE_PATH = /home/jexwerqwez/Qt5.12.12/5.12.12/gcc_64/bin/qmake
+BUILD_SRC = ./build
 CFLAGS_TEST =`pkg-config --cflags --libs check`
 CFLAGS_GCOV =-fprofile-arcs -ftest-coverage
 DIR = report/tests
@@ -43,17 +43,16 @@ tests: $(MATRIX_FILES) $(TESTS) ${SOURCE_BACKEND} ${HEADERS_BACKEND}
 	./$@
 
 pro:
-	mkdir build
-	${QMAKE_PATH} -o ./build/qMakefile
-	cd build
+	mkdir -p ${BUILD_SRC}
+	cd ${BUILD_SRC} && ${QMAKE_PATH} ../frontend/3DViewer.pro
+	cd ${BUILD_SRC} && make
 
 install: clean pro
 	$(info                                         )
 	$(info ----------------------------------------)
 	$(info Install the project                     )
 	$(info ----------------------------------------)
-	cd build/ && make -f qMakefile
-	cd build/ && ./3DViewer
+	cd ${BUILD_SRC} && ./3DViewer
 
 uninstall:
 	$(info                                         )
@@ -95,9 +94,8 @@ dist: clean pro
 	$(info ----------------------------------------)
 	$(info Create a distribution package           )
 	$(info ----------------------------------------)
-	cd build/ && make -f qMakefile
-	tar cvzf Archive_3DViewer_v1.0.tgz build
-	-rm -rf ./build
+	tar cvzf Archive_3DViewer_v1.0.tgz ${BUILD_SRC}
+	-rm -rf ${BUILD_SRC}
 
 clean:
 	-rm -rf *.o && rm -rf *.gcno
@@ -105,7 +103,7 @@ clean:
 	-rm -rf *.info && rm -rf *.gcov
 	-rm -rf ./test && rm -rf ./gcov_report
 	-rm -rf ./report/
-	-rm -rf qMakefile
-	-rm -rf ./build
+	# -rm -rf qMakefile
+	-rm -rf ${BUILD_SRC}
 	-rm -rf Archive_3DViewer_v1.0.tgz
 	-rm -rf tests
