@@ -27,6 +27,8 @@ MainWindow::MainWindow(QWidget *parent)
   widget_->setFocusPolicy(Qt::NoFocus);
 
   settings_button_ = new QPushButton("Settings", this);
+  settings_button_->hide();
+
   QPushButton *button = new QPushButton("Choose file", this);
   QPushButton *create_gif_button = new QPushButton("Create GIF", this);
   QPushButton *save_model_button = new QPushButton("Save model render", this);
@@ -79,8 +81,9 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 MainWindow::~MainWindow() {
-  settings_win_->SaveSettings(&re_settings_, camera_obj_, mesh_, line_material_,
-                              view_);
+  if (mesh_)
+    settings_win_->SaveSettings(&re_settings_, camera_obj_, mesh_,
+                                line_material_, view_);
   delete controller_;
   delete ui_;
 }
@@ -89,11 +92,13 @@ void MainWindow::OpenObjectFile(QLineEdit *line_edit, QPushButton *button) {
   connect(button, &QPushButton::clicked, this, [=]() {
     QString filename = QFileDialog::getOpenFileName(this, "Open a file", "",
                                                     "Obj Files (*.obj)");
+    if (filename.isEmpty()) return;
     line_edit->setText(filename);
     if (previous_model_ != filename) {
       previous_model_ = filename;
       controller_->StartParsing(filename.toStdString(), object_info_);
       UpdateView(filename);
+      settings_button_->show();
     }
   });
 }
@@ -179,13 +184,10 @@ void MainWindow::ImageRender() {
   QScreen *screen = view_->screen();
   QPixmap screenshot = screen->grabWindow(view_->winId());
 
-  if (!screenshot.isNull()) {
+  if (!screenshot.isNull())
     filename = QFileDialog::getSaveFileName(
         this, "Save Image", "", "JPEG Files (*.jpeg *.jpg);;BMP Files (*.bmp)");
-  }
-  if (!filename.isEmpty()) {
-    screenshot.save(filename);
-  }
+  if (!filename.isEmpty()) screenshot.save(filename);
 }
 
 void MainWindow::CreateGif() {

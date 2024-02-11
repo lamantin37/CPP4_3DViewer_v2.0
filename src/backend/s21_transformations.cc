@@ -14,10 +14,8 @@ void Move(float x, float y, float z, S21Matrix &cur_point, S21Matrix &result) {
 void Rotate(float x, float y, float z, S21Matrix &cur_point,
             S21Matrix &result) {
   S21Matrix rotate_matrix(4, 4);
-  for (int i = 0, j = 0; i < rotate_matrix.getRows(); i++, j++) {
+  for (int i = 0, j = 0; i < rotate_matrix.getRows(); i++, j++)
     rotate_matrix(i, j) = 1;
-  }
-
   if (x != 0) {
     rotate_matrix(1, 1) = cos(x);
     rotate_matrix(1, 2) = -sin(x);

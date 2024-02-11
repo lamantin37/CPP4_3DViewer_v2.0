@@ -51,21 +51,18 @@ void SettingsWindow::SaveSettings(
   Qt3DRender::QCameraLens *lens = camera_obj->lens();
   Qt3DRender::QCameraLens::ProjectionType projection_type =
       lens->projectionType();
-  if (projection_type == Qt3DRender::QCameraLens::PerspectiveProjection) {
+  if (projection_type == Qt3DRender::QCameraLens::PerspectiveProjection)
     setts->setValue("projection", "parallel");
-  } else if (projection_type ==
-             Qt3DRender::QCameraLens::OrthographicProjection) {
+  else if (projection_type == Qt3DRender::QCameraLens::OrthographicProjection)
     setts->setValue("projection", "central");
-  }
   if (mesh) {
     Qt3DRender::QGeometryRenderer::PrimitiveType primitive_type =
         mesh->primitiveType();
-    if (primitive_type == Qt3DRender::QGeometryRenderer::PrimitiveType::Lines) {
+    if (primitive_type == Qt3DRender::QGeometryRenderer::PrimitiveType::Lines)
       setts->setValue("line type", "lines");
-    } else if (primitive_type ==
-               Qt3DRender::QGeometryRenderer::PrimitiveType::Points) {
+    else if (primitive_type ==
+             Qt3DRender::QGeometryRenderer::PrimitiveType::Points)
       setts->setValue("line type", "points");
-    }
   }
   QColor line_clr = QColor(Qt::black);
   if (line_material->ambient() != QColor(Qt::black))
@@ -91,11 +88,10 @@ void SettingsWindow::LoadSettings(
                                                   -1.0, 1.0, 0.1f, 10000.0f);
   }
   QString prim_type = setts->value("line type").toString();
-  if (prim_type == "lines") {
+  if (prim_type == "lines")
     mesh->setPrimitiveType(Qt3DRender::QGeometryRenderer::Lines);
-  } else if (prim_type == "points") {
+  else if (prim_type == "points")
     mesh->setPrimitiveType(Qt3DRender::QGeometryRenderer::Points);
-  }
   QColor lineMaterial(setts->value("line material").toString());
   line_material->setAmbient(lineMaterial);
   object->addComponent(line_material);
@@ -208,16 +204,27 @@ void SettingsWindow::ProjectionSettings(Qt3DRender::QCamera *camera_obj,
   h_layout->addWidget(central_projection_radio_button);
   layout_->addWidget(proj_label);
   layout_->addLayout(h_layout);
+
   connect(parallel_projection_radio_button, &QRadioButton::clicked, this,
           [=]() {
             float aspect_ratio = float(view->width()) / view->height();
             camera_obj->lens()->setOrthographicProjection(
-                -aspect_ratio, aspect_ratio, -1.0, 1.0, 0.1f, 10000.0f);
+                -aspect_ratio * 2.0f, aspect_ratio * 2.0f, -2.0f, 2.0f, 0.1f,
+                10000.0f);
+            camera_obj->setPosition(QVector3D(0, 0, 20));
+            // camera_obj->setPosition(QVector3D(0, 20, 0));
+            // camera_obj->setPosition(QVector3D(20, 0, 0));
+            camera_obj->setViewCenter(QVector3D(0, 0, 0));
+            camera_obj->setUpVector(QVector3D(0, 1, 0));
           });
+
   connect(central_projection_radio_button, &QRadioButton::clicked, this, [=]() {
     float aspect_ratio = float(view->width()) / view->height();
     camera_obj->lens()->setPerspectiveProjection(45.0f, aspect_ratio, 0.1f,
                                                  10000.0f);
+    camera_obj->setPosition(QVector3D(0, 2, 0));
+    camera_obj->setViewCenter(QVector3D(1, 1, 0));
+    camera_obj->setUpVector(QVector3D(1, 0, 0));
   });
 }
 
@@ -256,8 +263,7 @@ void SettingsWindow::BackgroundSettings(Qt3DExtras::Qt3DWindow *view) {
   connect(background_color_button_, &QPushButton::clicked, this, [=]() {
     background_color_ =
         QColorDialog::getColor(Qt::white, this, "Choose background color");
-    if (background_color_.isValid()) {
+    if (background_color_.isValid())
       view->defaultFrameGraph()->setClearColor(QColor(background_color_));
-    }
   });
 }
