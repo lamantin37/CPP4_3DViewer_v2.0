@@ -1,11 +1,11 @@
-#ifndef CPP4_3DVIEWER_V2_0_1_BACKEND_OBJECT_HANDLER_H_
-#define CPP4_3DVIEWER_V2_0_1_BACKEND_OBJECT_HANDLER_H_
+#ifndef CPP4_3DVIEWER_V2_0_1_BACKEND_AUXILIARY_MODULES_H_
+#define CPP4_3DVIEWER_V2_0_1_BACKEND_AUXILIARY_MODULES_H_
 
 #include <fstream>
 #include <string>
 #include <vector>
 
-#include "s21_matrix/s21_matrix_oop.h"
+#include "transformation_strategy.h"
 
 namespace s21 {
 struct Vertex {
@@ -27,17 +27,18 @@ struct Object {
 
 class AuxiliaryModules {
  public:
-  AuxiliaryModules() = default;
+  void SetStrategy(TransformationStrategy *strategy) { strategy_ = strategy; }
+
+  void ExecuteStrategy(float x, float y, float z, S21Matrix &cur_point,
+                       S21Matrix &result) {
+    if (strategy_ != nullptr) strategy_->Transform(x, y, z, cur_point, result);
+  }
   static int ParserCounter(std::ifstream &file, Object &object);
   static void ObjectParser(std::ifstream &file, Object &object);
 
-  static void Move(float x, float y, float z, S21Matrix &cur_point,
-                   S21Matrix &result);
-  static void Rotate(float x, float y, float z, S21Matrix &cur_point,
-                     S21Matrix &result);
-  static void Scale(float x, float y, float z, S21Matrix &cur_point,
-                    S21Matrix &result);
+ private:
+  TransformationStrategy *strategy_;
 };
 }  // namespace s21
 
-#endif  // CPP4_3DVIEWER_V2_0_1_BACKEND_OBJECT_HANDLER_H_
+#endif  // CPP4_3DVIEWER_V2_0_1_BACKEND_AUXILIARY_MODULES_H_

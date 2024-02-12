@@ -16,12 +16,14 @@
 #include <Qt3DRender>
 
 #include "../backend/auxiliary_modules.h"
+#include "command.h"
 
 namespace s21 {
 class SettingsWindow : public QWidget {
   Q_OBJECT
  public:
-  explicit SettingsWindow(QWidget *parent = nullptr);
+  explicit SettingsWindow(QWidget *parent = nullptr,
+                          Controller *controller = nullptr);
   void AddMoveSliders(Qt3DCore::QTransform *transform);
   void AddRotateSliders(Qt3DCore::QTransform *transform);
   void AddScaleSliders(Qt3DRender::QCamera *camera_obj);
@@ -73,6 +75,7 @@ class SettingsWindow : public QWidget {
   }
 
  private:
+  Controller *controller_;
   QVBoxLayout *layout_ = nullptr;
   QSlider *move_x_ = nullptr;
   QSlider *move_y_ = nullptr;

@@ -1,16 +1,8 @@
 #ifndef CPP4_3DVIEWER_V2_0_1_FRONTEND_MAINWINDOW_H_
 #define CPP4_3DVIEWER_V2_0_1_FRONTEND_MAINWINDOW_H_
 
-#include <QColor>
-#include <QFileDialog>
-#include <QImageWriter>
-#include <QLineEdit>
-#include <QMainWindow>
-#include <QMesh>
-#include <QScreen>
-
 #include "../controller/s21_controller.h"
-#include "qgifimage.h"
+#include "command.h"
 #include "settingswindow.h"
 
 namespace s21 {
@@ -28,7 +20,7 @@ class MainWindow : public QMainWindow {
   ~MainWindow();
 
   void OpenObjectFile(QLineEdit *lineEdit, QPushButton *button);
-  void UpdateView(QString &filename);
+  void UpdateView(const QString &filename);
   void Settings();
   void ObjectInfo(const Object &object, const char *filename);
   void ImageRender();

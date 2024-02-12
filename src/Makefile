@@ -12,6 +12,7 @@ BUILD_SRC = ./build
 CFLAGS_TEST =`pkg-config --cflags --libs check`
 CFLAGS_GCOV =-fprofile-arcs -ftest-coverage
 DIR = report/tests
+CLANG_COMMAND = clang-format -style=Google -i
 
 _UNAME_ := $(shell uname -s)
 
@@ -96,6 +97,13 @@ dist: clean pro
 	$(info ----------------------------------------)
 	tar cvzf Archive_3DViewer_v1.0.tgz ${BUILD_SRC}
 	-rm -rf ${BUILD_SRC}
+
+style:
+	${CLANG_COMMAND} frontend/*.h frontend/*.cc
+	${CLANG_COMMAND} backend/s21_matrix/*.h backend/s21_matrix/*.cc
+	${CLANG_COMMAND} backend/*.h backend/*.cc
+	${CLANG_COMMAND} controller/*.h controller/*.cc
+	${CLANG_COMMAND} *.cc
 
 clean:
 	-rm -rf *.o && rm -rf *.gcno

@@ -9,8 +9,6 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
       ui_(new Ui::MainWindow),
       re_settings_("School 21", "3DViewer") {
-  controller_ = new Controller();
-
   ui_->setupUi(this);
 
   parent_win_ = new Qt3DCore::QEntity();  // конктруктор корневого окна
@@ -19,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
   view_ = new Qt3DExtras::Qt3DWindow();  // создаем окно для отображения сцены
   view_->defaultFrameGraph()->setClearColor(QRgb(0xffffff));  // стандартный фон
   view_->setRootEntity(parent_win_);  // устанавливаем корневое окно
-
+  controller_ = new Controller(view_);
   QSize screen_size = view_->screen()->size();  // получение размера окна
 
   widget_ = QWidget::createWindowContainer(
@@ -73,7 +71,7 @@ MainWindow::MainWindow(QWidget *parent)
 
   // открытие файла и его загрузка
   OpenObjectFile(line_edit, button);
-  settings_win_ = new SettingsWindow(this);
+  settings_win_ = new SettingsWindow(this, controller_);
 
   connect(save_model_button, &QPushButton::clicked, this,
           [=]() { ImageRender(); });
@@ -98,18 +96,23 @@ void MainWindow::OpenObjectFile(QLineEdit *line_edit, QPushButton *button) {
     line_edit->setText(filename);
     if (previous_model_ != filename) {
       previous_model_ = filename;
-      controller_->StartParsing(filename.toStdString(), object_info_);
+      // controller_->StartParsing(filename.toStdString(), object_info_);
+      Command *command = new LoadObjectCommand(
+          controller_, filename.toStdString(), object_info_);
+      command->execute();
       UpdateView(filename);
       settings_button_->show();
+      delete command;
     }
   });
 }
 
-void MainWindow::UpdateView(QString &filename) {
+void MainWindow::UpdateView(const QString &filename) {
   if (file_label_) {
     layout_->removeWidget(file_label_);
     delete file_label_;
   }
+
   QString file_info = QString("<b>File:</b> %1<br>").arg(previous_model_);
   QString vertices_info =
       QString("<b>Number of vertices:</b> %1<br>")
@@ -121,23 +124,20 @@ void MainWindow::UpdateView(QString &filename) {
   file_label_ = new QLabel(file_info + vertices_info + polygons_info, this);
   layout_->addWidget(file_label_);
   file_label_->setMaximumHeight(60);
-
   if (mesh_ != nullptr) {
     entity_object_->removeComponent(mesh_);
     delete mesh_;
   }
-
   previous_model_ = filename;
   mesh_ = new Qt3DRender::QMesh(parent_win_);
-  mesh_->setSource(QUrl::fromLocalFile(filename));
-  mesh_->setPrimitiveType(Qt3DRender::QGeometryRenderer::Lines);
+  const std::string filename_std = filename.toStdString();
+  Command *command =
+      new UpdateViewCommand(controller_, mesh_, entity_object_, transform_,
+                            filename_std, object_info_);
+  command->execute();
+  delete command;
   settings_win_->LoadSettings(&re_settings_, camera_obj_, mesh_, view_,
                               entity_object_, line_material_);
-  entity_object_->addComponent(mesh_);
-  transform_ = new Qt3DCore::QTransform();
-  entity_object_->addComponent(transform_);
-  const std::string charstring = filename.toStdString();
-  controller_->StartParsing(charstring, object_info_);
   Settings();
 }
 
@@ -182,14 +182,14 @@ void MainWindow::ObjectInfo(const Object &object, const char *filename) {
 }
 
 void MainWindow::ImageRender() {
-  QString filename;
-  QScreen *screen = view_->screen();
-  QPixmap screenshot = screen->grabWindow(view_->winId());
+  QString filename = QFileDialog::getSaveFileName(
+      this, "Save Image", "", "JPEG Files (*.jpeg *.jpg);;BMP Files (*.bmp)");
 
-  if (!screenshot.isNull())
-    filename = QFileDialog::getSaveFileName(
-        this, "Save Image", "", "JPEG Files (*.jpeg *.jpg);;BMP Files (*.bmp)");
-  if (!filename.isEmpty()) screenshot.save(filename);
+  if (!filename.isEmpty()) {
+    Command *command = new SaveImageCommand(controller_, filename);
+    command->execute();
+    delete command;
+  }
 }
 
 void MainWindow::CreateGif() {
@@ -204,12 +204,14 @@ void MainWindow::CreateGif() {
 
 void MainWindow::CaptureFrameForGif() {
   if (frame_count_ < gif_time_ * fps_) {
-    QPixmap screenshot = view_->screen()->grabWindow(view_->winId());
-    gif_image_.addFrame(screenshot.toImage());
+    Command *command = new CreateGifCommand(controller_, &gif_image_);
+    command->execute();
+    delete command;
     frame_count_++;
   } else {
     gif_timer_->stop();
     gif_image_.save(gif_file_name_);
   }
 }
+
 }  // namespace s21
