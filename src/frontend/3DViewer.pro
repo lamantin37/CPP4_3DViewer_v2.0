@@ -23,6 +23,7 @@ HEADERS += \
     ../backend/transformation_strategy.h \
     ../controller/s21_controller.h \
     command.h \
+    facade.h \
     mainwindow.h \
     settingswindow.h
 

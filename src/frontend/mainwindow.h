@@ -2,7 +2,7 @@
 #define CPP4_3DVIEWER_V2_0_1_FRONTEND_MAINWINDOW_H_
 
 #include "../controller/s21_controller.h"
-#include "command.h"
+#include "facade.h"
 #include "settingswindow.h"
 
 namespace s21 {
@@ -20,7 +20,7 @@ class MainWindow : public QMainWindow {
   ~MainWindow();
 
   void OpenObjectFile(QLineEdit *lineEdit, QPushButton *button);
-  void UpdateView(const QString &filename);
+  void UpdateView(const QString &filename, Object *object_info);
   void Settings();
   void ObjectInfo(const Object &object, const char *filename);
   void ImageRender();
@@ -29,13 +29,15 @@ class MainWindow : public QMainWindow {
 
  private:
   Ui::MainWindow *ui_;
+  QSettings re_settings_;
+  Facade *facade_;
   Controller *controller_;
   bool settings_flag_ = false;
   int frame_count_;
   int fps_ = 15;
   int gif_time_ = 5;
   SettingsWindow *settings_win_;
-  Object object_info_;
+  // Object object_info_;
   Qt3DCore::QEntity *parent_win_ = nullptr;  // корневое окно
   Qt3DCore::QEntity *entity_object_ = nullptr;
   Qt3DCore::QTransform *transform_ = nullptr;
@@ -51,7 +53,6 @@ class MainWindow : public QMainWindow {
   QVBoxLayout *layout_ = nullptr;
   QPushButton *settings_button_ = nullptr;
   QWidget *widget_;
-  QSettings re_settings_;
   QTimer *gif_timer_;
   QGifImage gif_image_;
 };

@@ -22,15 +22,15 @@ class Command {
 class LoadObjectCommand : public Command {
  public:
   LoadObjectCommand(Controller *controller, std::string filename,
-                    Object &object_info)
+                    Object *object_info)
       : Command(controller), filename_(filename), object_info_(object_info) {}
   void execute() override {
-    controller_->StartParsing(filename_, object_info_);
+    controller_->StartParsing(filename_, *object_info_);
   }
 
  private:
   std::string filename_;
-  Object object_info_;
+  Object *object_info_;
 };
 
 class SaveImageCommand : public Command {
@@ -68,7 +68,7 @@ class UpdateViewCommand : public Command {
   UpdateViewCommand(Controller *controller, Qt3DRender::QMesh *mesh,
                     Qt3DCore::QEntity *entity_object,
                     Qt3DCore::QTransform *transform,
-                    const std::string &filename, Object &object_info)
+                    const std::string &filename, Object *object_info)
       : Command(controller),
         mesh_(mesh),
         entity_object_(entity_object),
@@ -79,11 +79,8 @@ class UpdateViewCommand : public Command {
     mesh_->setSource(QUrl::fromLocalFile(QString::fromStdString(filename_)));
     mesh_->setPrimitiveType(Qt3DRender::QGeometryRenderer::Lines);
     entity_object_->addComponent(mesh_);
-    if (transform_ == nullptr) {
-      transform_ = new Qt3DCore::QTransform();
-      entity_object_->addComponent(transform_);
-    }
-    controller_->StartParsing(filename_, object_info_);
+    entity_object_->addComponent(transform_);
+    controller_->StartParsing(filename_, *object_info_);
   }
 
  private:
@@ -91,7 +88,7 @@ class UpdateViewCommand : public Command {
   Qt3DCore::QEntity *entity_object_;
   Qt3DCore::QTransform *transform_;
   std::string filename_;
-  Object object_info_;
+  Object *object_info_;
 };
 
 class SettingsCommand : public Command {

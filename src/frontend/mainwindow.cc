@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
       ui_(new Ui::MainWindow),
       re_settings_("School 21", "3DViewer") {
   ui_->setupUi(this);
-
+  transform_ = new Qt3DCore::QTransform();
   parent_win_ = new Qt3DCore::QEntity();  // конктруктор корневого окна
   parent_win_->setObjectName("Root window");
 
@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
   view_->setRootEntity(parent_win_);  // устанавливаем корневое окно
   controller_ = new Controller(view_);
   QSize screen_size = view_->screen()->size();  // получение размера окна
+  facade_ = new Facade();
 
   widget_ = QWidget::createWindowContainer(
       view_);  // встраивание виджета view в окно приложения
@@ -86,6 +87,7 @@ MainWindow::~MainWindow() {
                                 line_material_, view_);
   delete controller_;
   delete ui_;
+  delete facade_;
 }
 
 void MainWindow::OpenObjectFile(QLineEdit *line_edit, QPushButton *button) {
@@ -96,48 +98,23 @@ void MainWindow::OpenObjectFile(QLineEdit *line_edit, QPushButton *button) {
     line_edit->setText(filename);
     if (previous_model_ != filename) {
       previous_model_ = filename;
-      // controller_->StartParsing(filename.toStdString(), object_info_);
-      Command *command = new LoadObjectCommand(
-          controller_, filename.toStdString(), object_info_);
-      command->execute();
-      UpdateView(filename);
+      Object object_info = facade_->LoadObject(filename);
+      UpdateView(filename, &object_info);
       settings_button_->show();
-      delete command;
     }
   });
 }
 
-void MainWindow::UpdateView(const QString &filename) {
-  if (file_label_) {
-    layout_->removeWidget(file_label_);
-    delete file_label_;
-  }
-
-  QString file_info = QString("<b>File:</b> %1<br>").arg(previous_model_);
-  QString vertices_info =
-      QString("<b>Number of vertices:</b> %1<br>")
-          .arg(QString::number(object_info_.num_of_vertices));
-  QString polygons_info =
-      QString("<b>Number of polygons:</b> %1")
-          .arg(QString::number(object_info_.num_of_polygons));
-
-  file_label_ = new QLabel(file_info + vertices_info + polygons_info, this);
-  layout_->addWidget(file_label_);
-  file_label_->setMaximumHeight(60);
+void MainWindow::UpdateView(const QString &filename, Object *object_info) {
   if (mesh_ != nullptr) {
     entity_object_->removeComponent(mesh_);
     delete mesh_;
   }
-  previous_model_ = filename;
   mesh_ = new Qt3DRender::QMesh(parent_win_);
-  const std::string filename_std = filename.toStdString();
-  Command *command =
-      new UpdateViewCommand(controller_, mesh_, entity_object_, transform_,
-                            filename_std, object_info_);
-  command->execute();
-  delete command;
-  settings_win_->LoadSettings(&re_settings_, camera_obj_, mesh_, view_,
-                              entity_object_, line_material_);
+  previous_model_ = filename;
+  facade_->UpdateView(filename, object_info, mesh_, entity_object_, transform_,
+                      &re_settings_, view_, line_material_, file_label_,
+                      layout_, camera_obj_);
   Settings();
 }
 
@@ -184,12 +161,7 @@ void MainWindow::ObjectInfo(const Object &object, const char *filename) {
 void MainWindow::ImageRender() {
   QString filename = QFileDialog::getSaveFileName(
       this, "Save Image", "", "JPEG Files (*.jpeg *.jpg);;BMP Files (*.bmp)");
-
-  if (!filename.isEmpty()) {
-    Command *command = new SaveImageCommand(controller_, filename);
-    command->execute();
-    delete command;
-  }
+  if (!filename.isEmpty()) facade_->ImageRender(filename);
 }
 
 void MainWindow::CreateGif() {
