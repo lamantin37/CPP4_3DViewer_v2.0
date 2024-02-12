@@ -35,32 +35,34 @@ class LoadObjectCommand : public Command {
 
 class SaveImageCommand : public Command {
  public:
-  SaveImageCommand(Controller *controller, QString filename)
-      : Command(controller), filename_(filename) {}
+  SaveImageCommand(Controller *controller, QString filename,
+                   Qt3DExtras::Qt3DWindow *view)
+      : Command(controller), filename_(filename), view_(view) {}
   void execute() override {
-    Qt3DExtras::Qt3DWindow *view = controller_->getView();
-    QScreen *screen = view->screen();
-    QPixmap screenshot = screen->grabWindow(view->winId());
+    QScreen *screen = view_->screen();
+    QPixmap screenshot = screen->grabWindow(view_->winId());
     if (!filename_.isEmpty()) screenshot.save(filename_);
   }
 
  private:
   QString filename_;
+  Qt3DExtras::Qt3DWindow *view_;
 };
 
 class CreateGifCommand : public Command {
  public:
-  CreateGifCommand(Controller *controller, QGifImage *gif_image)
-      : Command(controller), gif_image_(gif_image) {}
+  CreateGifCommand(Controller *controller, QGifImage *gif_image,
+                   Qt3DExtras::Qt3DWindow *view)
+      : Command(controller), gif_image_(gif_image), view_(view) {}
 
   void execute() override {
-    Qt3DExtras::Qt3DWindow *view = controller_->getView();
-    QPixmap screenshot = view->screen()->grabWindow(view->winId());
+    QPixmap screenshot = view_->screen()->grabWindow(view_->winId());
     gif_image_->addFrame(screenshot.toImage());
   }
 
  private:
   QGifImage *gif_image_;
+  Qt3DExtras::Qt3DWindow *view_;
 };
 
 class UpdateViewCommand : public Command {

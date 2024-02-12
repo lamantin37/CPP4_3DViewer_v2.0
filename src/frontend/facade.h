@@ -32,8 +32,8 @@ class Facade {
     return object_info;
   }
 
-  void ImageRender(QString &filename) {
-    Command *command = new SaveImageCommand(controller_, filename);
+  void ImageRender(const QString &filename, Qt3DExtras::Qt3DWindow *view) {
+    Command *command = new SaveImageCommand(controller_, filename, view);
     command->execute();
     delete command;
   }
@@ -66,6 +66,26 @@ class Facade {
     delete command;
     settings_window_->LoadSettings(settings, camera_obj, mesh, view,
                                    entity_object, line_material);
+  }
+
+  void StartGifCreation(const QString &filename, int fps) {
+    gif_file_name_ = filename;
+    gif_image_ = new QGifImage();
+    gif_image_->setDefaultDelay(1000 / fps);
+  }
+
+  void CaptureFrameForGif(Qt3DExtras::Qt3DWindow *view) {
+    Command *command = new CreateGifCommand(controller_, gif_image_, view);
+    command->execute();
+    delete command;
+  }
+
+  void FinishGifCreation() {
+    if (gif_image_ != nullptr) {
+      gif_image_->save(gif_file_name_);
+      delete gif_image_;
+      gif_image_ = nullptr;
+    }
   }
 
  private:

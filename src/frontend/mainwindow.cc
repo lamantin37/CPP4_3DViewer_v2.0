@@ -161,14 +161,17 @@ void MainWindow::ObjectInfo(const Object &object, const char *filename) {
 void MainWindow::ImageRender() {
   QString filename = QFileDialog::getSaveFileName(
       this, "Save Image", "", "JPEG Files (*.jpeg *.jpg);;BMP Files (*.bmp)");
-  if (!filename.isEmpty()) facade_->ImageRender(filename);
+  if (!filename.isEmpty())
+    QTimer::singleShot(100, this, [this, filename]() {
+      facade_->ImageRender(filename, view_);
+    });
 }
 
 void MainWindow::CreateGif() {
   gif_file_name_ =
       QFileDialog::getSaveFileName(this, "Save GIF", "", "(*.gif)");
   if (!gif_file_name_.isEmpty()) {
-    gif_image_.setDefaultDelay(1000 / fps_);
+    facade_->StartGifCreation(gif_file_name_, fps_);
     frame_count_ = 0;
     gif_timer_->start(1000 / fps_);
   }
@@ -176,13 +179,11 @@ void MainWindow::CreateGif() {
 
 void MainWindow::CaptureFrameForGif() {
   if (frame_count_ < gif_time_ * fps_) {
-    Command *command = new CreateGifCommand(controller_, &gif_image_);
-    command->execute();
-    delete command;
+    facade_->CaptureFrameForGif(view_);
     frame_count_++;
   } else {
     gif_timer_->stop();
-    gif_image_.save(gif_file_name_);
+    facade_->FinishGifCreation();
   }
 }
 
