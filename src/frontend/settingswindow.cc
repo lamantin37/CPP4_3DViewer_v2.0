@@ -166,32 +166,28 @@ void SettingsWindow::AddRotateSliders(Qt3DCore::QTransform *transform) {
                       &Qt3DCore::QTransform::setRotationZ);
 }
 
-void SettingsWindow::AddScaleSliders(Qt3DRender::QCamera *camera_obj) {
+void SettingsWindow::AddScaleSliders(Qt3DCore::QTransform *transform) {
   scale_object_label_->setMaximumSize(150, 20);
   layout_->addWidget(scale_object_label_);
-  scale_object_->setRange(-1000, 1000);
-  scale_object_->setValue(0);
+  scale_object_->setRange(0, 300);
+  scale_object_->setValue(100);
+
   QHBoxLayout *x_layout = new QHBoxLayout();
   x_layout->addWidget(scale_object_);
   x_layout->addWidget(scale_edit_);
   layout_->addLayout(x_layout);
+
   connect(scale_object_, &QSlider::valueChanged, this,
-          [this, camera_obj](int value) {
-            QVector3D camera_position = camera_obj->position();
-            QVector3D view_center = camera_obj->viewCenter();
-            QVector3D direction = camera_position - view_center;
-            direction.normalize();
-            float scale_factor = std::pow(1.01f, value);
-            camera_obj->setPosition(view_center + direction * scale_factor);
+          [this, transform](int value) {
+            float scaleFactor = static_cast<float>(value) / 100.0f;
+            transform->setScale(scaleFactor);
             scale_edit_->setText(QString::number(value));
           });
-  connect(scale_edit_, &QLineEdit::returnPressed, this, [this, camera_obj]() {
-    QVector3D camera_position = camera_obj->position();
-    QVector3D view_center = camera_obj->viewCenter();
-    QVector3D direction = camera_position - view_center;
-    direction.normalize();
-    float scale_factor = std::pow(1.01f, scale_edit_->text().toFloat());
-    camera_obj->setPosition(view_center + direction * scale_factor);
+
+  connect(scale_edit_, &QLineEdit::returnPressed, this, [this, transform]() {
+    float scaleFactor = scale_edit_->text().toFloat() / 100.0f;
+    transform->setScale(scaleFactor);
+    scale_object_->setValue(static_cast<int>(scaleFactor * 100));
   });
 }
 

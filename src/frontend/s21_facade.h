@@ -19,8 +19,8 @@
 
 #include "../backend/s21_auxiliary_modules.h"
 #include "../controller/s21_controller.h"
-#include "s21_command.h"
 #include "qgifimage.h"
+#include "s21_command.h"
 // #include "settingswindow.h"
 
 namespace s21 {

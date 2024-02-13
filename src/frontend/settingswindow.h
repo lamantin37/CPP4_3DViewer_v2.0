@@ -13,7 +13,7 @@ class SettingsWindow : public QWidget {
                           Facade *facade = nullptr);
   void AddMoveSliders(Qt3DCore::QTransform *transform);
   void AddRotateSliders(Qt3DCore::QTransform *transform);
-  void AddScaleSliders(Qt3DRender::QCamera *camera_obj);
+  void AddScaleSliders(Qt3DCore::QTransform *transform);
   void ProjectionSettings(Qt3DRender::QCamera *camera_obj);
   void LineTypeSettings(Qt3DRender::QMesh *mesh);
   void LineColorSettings(Qt3DCore::QEntity *object,

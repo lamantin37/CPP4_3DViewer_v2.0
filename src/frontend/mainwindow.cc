@@ -130,7 +130,7 @@ void MainWindow::Settings() {
       settings_win_->show();
       settings_win_->AddMoveSliders(transform_);
       settings_win_->AddRotateSliders(transform_);
-      settings_win_->AddScaleSliders(camera_obj_);
+      settings_win_->AddScaleSliders(transform_);
       settings_win_->ProjectionSettings(camera_obj_);
       settings_win_->LineColorSettings(entity_object_, line_material_);
       settings_win_->LineTypeSettings(mesh_);
