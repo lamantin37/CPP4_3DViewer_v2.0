@@ -72,7 +72,7 @@ MainWindow::MainWindow(QWidget *parent)
 
   // открытие файла и его загрузка
   OpenObjectFile(line_edit, button);
-  settings_win_ = new SettingsWindow(this, controller_);
+  settings_win_ = new SettingsWindow(this, controller_, facade_);
 
   connect(save_model_button, &QPushButton::clicked, this,
           [=]() { ImageRender(); });
@@ -116,9 +116,10 @@ void MainWindow::UpdateView(const QString &filename, Object *object_info) {
   }
   mesh_ = new Qt3DRender::QMesh(parent_win_);
   previous_model_ = filename;
-  file_label_ = facade_->UpdateView(
-      filename, object_info, mesh_, entity_object_, transform_, &re_settings_,
-      view_, line_material_, layout_, camera_obj_);
+  file_label_ = facade_->UpdateView(filename, object_info, mesh_,
+                                    entity_object_, transform_, layout_);
+  settings_win_->LoadSettings(&re_settings_, camera_obj_, mesh_, view_,
+                              entity_object_, line_material_);
   Settings();
 }
 
@@ -130,7 +131,7 @@ void MainWindow::Settings() {
       settings_win_->AddMoveSliders(transform_);
       settings_win_->AddRotateSliders(transform_);
       settings_win_->AddScaleSliders(camera_obj_);
-      settings_win_->ProjectionSettings(camera_obj_, view_);
+      settings_win_->ProjectionSettings(camera_obj_);
       settings_win_->LineColorSettings(entity_object_, line_material_);
       settings_win_->LineTypeSettings(mesh_);
       settings_win_->BackgroundSettings(view_);

@@ -1,13 +1,27 @@
 #ifndef CPP4_3DVIEWER_V2_0_1_FRONTEND_S21_FACADE_H_
 #define CPP4_3DVIEWER_V2_0_1_FRONTEND_S21_FACADE_H_
 
+#include <QApplication>
+#include <QColorDialog>
+#include <QFileDialog>
+#include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QRadioButton>
+#include <QSettings>
+#include <QSlider>
+#include <QVBoxLayout>
+#include <QWidget>
+#include <Qt3DCore>
+#include <Qt3DExtras>
+#include <Qt3DRender>
 #include <string>
 
-#include "../backend/auxiliary_modules.h"
+#include "../backend/s21_auxiliary_modules.h"
 #include "../controller/s21_controller.h"
-#include "command.h"
+#include "s21_command.h"
 #include "qgifimage.h"
-#include "settingswindow.h"
+// #include "settingswindow.h"
 
 namespace s21 {
 class Facade {
@@ -15,10 +29,8 @@ class Facade {
   Facade() {
     view_ = new Qt3DExtras::Qt3DWindow();
     controller_ = new Controller();
-    settings_window_ = new SettingsWindow(nullptr, controller_);
   }
   ~Facade() {
-    delete settings_window_;
     delete controller_;
     delete view_;
   }
@@ -40,10 +52,7 @@ class Facade {
 
   QLabel *UpdateView(const QString &filename, Object *object_info,
                      Qt3DRender::QMesh *mesh, Qt3DCore::QEntity *entity_object,
-                     Qt3DCore::QTransform *transform, QSettings *settings,
-                     Qt3DExtras::Qt3DWindow *view,
-                     Qt3DExtras::QDiffuseSpecularMaterial *line_material,
-                     QVBoxLayout *layout, Qt3DRender::QCamera *camera_obj) {
+                     Qt3DCore::QTransform *transform, QVBoxLayout *layout) {
     QString file_info = QString("<b>File:</b> %1<br>").arg(filename);
     QString vertices_info =
         QString("<b>Number of vertices:</b> %1<br>")
@@ -59,8 +68,6 @@ class Facade {
         controller_, mesh, entity_object, transform, filename_std, object_info);
     command->Execute();
     delete command;
-    settings_window_->LoadSettings(settings, camera_obj, mesh, view,
-                                   entity_object, line_material);
     return file_label;
   }
 
@@ -84,10 +91,46 @@ class Facade {
     }
   }
 
+  void ProjectionSettings(Qt3DRender::QCamera *camera_obj, short int type) {
+    Command *command = nullptr;
+    if (type == 0)
+      command =
+          new SetParallelProjectionCommand(controller_, camera_obj, view_);
+    else
+      command = new SetCentralProjectionCommand(controller_, camera_obj, view_);
+    command->Execute();
+    delete command;
+  }
+
+  void LineTypeSettings(Qt3DRender::QMesh *mesh, short int type) {
+    Command *command = nullptr;
+    command =
+        (type == 0)
+            ? new ChangeLineTypeCommand(controller_, mesh,
+                                        Qt3DRender::QGeometryRenderer::Lines)
+            : new ChangeLineTypeCommand(controller_, mesh,
+                                        Qt3DRender::QGeometryRenderer::Points);
+    command->Execute();
+    delete command;
+  }
+
+  void LineColorSettings(QColor line_color, Qt3DCore::QEntity *object,
+                         Qt3DExtras::QDiffuseSpecularMaterial *line_material) {
+    Command *command =
+        new LineColorCommand(controller_, object, line_color, line_material);
+    command->Execute();
+    delete command;
+  }
+
+  void BackgroundSettings(Qt3DExtras::Qt3DWindow *view, QColor color) {
+    Command *command = new BackgroundColorCommand(controller_, view, color);
+    command->Execute();
+    delete command;
+  }
+
  private:
   Qt3DExtras::Qt3DWindow *view_;
   Controller *controller_;
-  SettingsWindow *settings_window_;
   QGifImage *gif_image_ = nullptr;
   QString gif_file_name_;
 };

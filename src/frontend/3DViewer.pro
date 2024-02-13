@@ -12,18 +12,18 @@ SOURCES += \
     ../backend/s21_matrix/s21_matrix_oop_operators.cc \
     ../backend/s21_matrix/s21_matrix_oop.cc \
     ../backend/s21_parser.cc \
-    ../backend/transformation_strategy.cc \
+    ../backend/s21_transformation_strategy.cc \
     ../controller/s21_controller.cc \
     mainwindow.cc \
     settingswindow.cc \
     ../main.cc
 HEADERS += \
-    ../backend/auxiliary_modules.h \
+    ../backend/s21_auxiliary_modules.h \
     ../backend/s21_matrix/s21_matrix_oop.h \
-    ../backend/transformation_strategy.h \
+    ../backend/s21_transformation_strategy.h \
     ../controller/s21_controller.h \
-    command.h \
-    facade.h \
+    s21_command.h \
+    s21_facade.h \
     mainwindow.h \
     settingswindow.h
 

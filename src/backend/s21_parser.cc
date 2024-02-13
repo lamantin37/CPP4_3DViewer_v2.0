@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "auxiliary_modules.h"
+#include "s21_auxiliary_modules.h"
 
 namespace s21 {
 int AuxiliaryModules::ParserCounter(std::ifstream &file, Object &object) {

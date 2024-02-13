@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "../backend/auxiliary_modules.h"
+#include "../backend/s21_auxiliary_modules.h"
 
 namespace s21 {
 class Controller {

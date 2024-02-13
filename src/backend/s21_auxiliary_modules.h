@@ -1,11 +1,11 @@
-#ifndef CPP4_3DVIEWER_V2_0_1_BACKEND_AUXILIARY_MODULES_H_
-#define CPP4_3DVIEWER_V2_0_1_BACKEND_AUXILIARY_MODULES_H_
+#ifndef CPP4_3DVIEWER_V2_0_1_BACKEND_S21_AUXILIARY_MODULES_H_
+#define CPP4_3DVIEWER_V2_0_1_BACKEND_S21_AUXILIARY_MODULES_H_
 
 #include <fstream>
 #include <string>
 #include <vector>
 
-#include "transformation_strategy.h"
+#include "s21_transformation_strategy.h"
 
 namespace s21 {
 struct Vertex {

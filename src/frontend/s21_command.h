@@ -17,7 +17,7 @@
 #include <Qt3DRender/QRenderCapture>
 #include <string>
 
-#include "../backend/auxiliary_modules.h"
+#include "../backend/s21_auxiliary_modules.h"
 #include "../controller/s21_controller.h"
 #include "qgifimage.h"
 

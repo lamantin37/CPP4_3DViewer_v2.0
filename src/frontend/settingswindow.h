@@ -1,34 +1,20 @@
 #ifndef CPP4_3DVIEWER_V2_0_1_FRONTEND_SETTINGSWINDOW_H_
 #define CPP4_3DVIEWER_V2_0_1_FRONTEND_SETTINGSWINDOW_H_
-#include <QApplication>
-#include <QColorDialog>
-#include <QFileDialog>
-#include <QLabel>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QRadioButton>
-#include <QSettings>
-#include <QSlider>
-#include <QVBoxLayout>
-#include <QWidget>
-#include <Qt3DCore>
-#include <Qt3DExtras>
-#include <Qt3DRender>
 
-#include "../backend/auxiliary_modules.h"
-#include "command.h"
+#include "../backend/s21_auxiliary_modules.h"
+#include "s21_facade.h"
 
 namespace s21 {
 class SettingsWindow : public QWidget {
   Q_OBJECT
  public:
   explicit SettingsWindow(QWidget *parent = nullptr,
-                          Controller *controller = nullptr);
+                          Controller *controller = nullptr,
+                          Facade *facade = nullptr);
   void AddMoveSliders(Qt3DCore::QTransform *transform);
   void AddRotateSliders(Qt3DCore::QTransform *transform);
   void AddScaleSliders(Qt3DRender::QCamera *camera_obj);
-  void ProjectionSettings(Qt3DRender::QCamera *camera_obj,
-                          Qt3DExtras::Qt3DWindow *view);
+  void ProjectionSettings(Qt3DRender::QCamera *camera_obj);
   void LineTypeSettings(Qt3DRender::QMesh *mesh);
   void LineColorSettings(Qt3DCore::QEntity *object,
                          Qt3DExtras::QDiffuseSpecularMaterial *line_material);
@@ -76,6 +62,7 @@ class SettingsWindow : public QWidget {
 
  private:
   Controller *controller_;
+  Facade *facade_;
   QVBoxLayout *layout_ = nullptr;
   QSlider *move_x_ = nullptr;
   QSlider *move_y_ = nullptr;

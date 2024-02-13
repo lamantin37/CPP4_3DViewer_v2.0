@@ -1,8 +1,9 @@
 #include "settingswindow.h"
 
 namespace s21 {
-SettingsWindow::SettingsWindow(QWidget *parent, Controller *controller)
-    : QWidget(parent), controller_(controller) {
+SettingsWindow::SettingsWindow(QWidget *parent, Controller *controller,
+                               Facade *facade)
+    : QWidget(parent), controller_(controller), facade_(facade) {
   setWindowFlags(Qt::Window);
   setFixedSize(QSize(400, 600));
   layout_ = new QVBoxLayout();
@@ -194,8 +195,7 @@ void SettingsWindow::AddScaleSliders(Qt3DRender::QCamera *camera_obj) {
   });
 }
 
-void SettingsWindow::ProjectionSettings(Qt3DRender::QCamera *camera_obj,
-                                        Qt3DExtras::Qt3DWindow *view) {
+void SettingsWindow::ProjectionSettings(Qt3DRender::QCamera *camera_obj) {
   QLabel *proj_label = new QLabel("Select projection:", this);
   QRadioButton *parallel_projection_radio_button =
       new QRadioButton("Parallel projection", this);
@@ -208,19 +208,10 @@ void SettingsWindow::ProjectionSettings(Qt3DRender::QCamera *camera_obj,
   layout_->addLayout(h_layout);
 
   connect(parallel_projection_radio_button, &QRadioButton::clicked, this,
-          [=]() {
-            Command *command =
-                new SetParallelProjectionCommand(controller_, camera_obj, view);
-            command->Execute();
-            delete command;
-          });
+          [=]() { facade_->ProjectionSettings(camera_obj, 0); });
 
-  connect(central_projection_radio_button, &QRadioButton::clicked, this, [=]() {
-    Command *command =
-        new SetCentralProjectionCommand(controller_, camera_obj, view);
-    command->Execute();
-    delete command;
-  });
+  connect(central_projection_radio_button, &QRadioButton::clicked, this,
+          [=]() { facade_->ProjectionSettings(camera_obj, 1); });
 }
 
 void SettingsWindow::LineTypeSettings(Qt3DRender::QMesh *mesh) {
@@ -232,19 +223,11 @@ void SettingsWindow::LineTypeSettings(Qt3DRender::QMesh *mesh) {
   line_type_layout_->addWidget(dot_type_radio_button_);
   layout_->addWidget(type_label_);
   layout_->addLayout(line_type_layout_);
-  connect(line_type_radio_button_, &QRadioButton::clicked, this, [=]() {
-    Command *command = new ChangeLineTypeCommand(
-        controller_, mesh, Qt3DRender::QGeometryRenderer::Lines);
-    command->Execute();
-    delete command;
-  });
+  connect(line_type_radio_button_, &QRadioButton::clicked, this,
+          [=]() { facade_->LineTypeSettings(mesh, 0); });
 
-  connect(dot_type_radio_button_, &QRadioButton::clicked, this, [=]() {
-    Command *command = new ChangeLineTypeCommand(
-        controller_, mesh, Qt3DRender::QGeometryRenderer::Points);
-    command->Execute();
-    delete command;
-  });
+  connect(dot_type_radio_button_, &QRadioButton::clicked, this,
+          [=]() { facade_->LineTypeSettings(mesh, 1); });
 }
 
 void SettingsWindow::LineColorSettings(
@@ -253,12 +236,8 @@ void SettingsWindow::LineColorSettings(
   layout_->addWidget(line_color_button_);
   connect(line_color_button_, &QPushButton::clicked, this, [=]() {
     line_color_ = QColorDialog::getColor(Qt::white, this, "Choose line color");
-    if (line_color_.isValid()) {
-      Command *command =
-          new LineColorCommand(controller_, object, line_color_, line_material);
-      command->Execute();
-      delete command;
-    }
+    if (line_color_.isValid())
+      facade_->LineColorSettings(line_color_, object, line_material);
   });
 }
 
@@ -267,11 +246,7 @@ void SettingsWindow::BackgroundSettings(Qt3DExtras::Qt3DWindow *view) {
   connect(background_color_button_, &QPushButton::clicked, this, [=]() {
     QColor color =
         QColorDialog::getColor(Qt::white, this, "Choose background color");
-    if (color.isValid()) {
-      Command *command = new BackgroundColorCommand(controller_, view, color);
-      command->Execute();
-      delete command;
-    }
+    if (color.isValid()) facade_->BackgroundSettings(view, color);
   });
 }
 }  // namespace s21

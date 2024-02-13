@@ -2,7 +2,7 @@
 #define CPP4_3DVIEWER_V2_0_1_FRONTEND_MAINWINDOW_H_
 
 #include "../controller/s21_controller.h"
-#include "facade.h"
+#include "s21_facade.h"
 #include "settingswindow.h"
 
 namespace s21 {
