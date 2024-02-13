@@ -1,6 +1,20 @@
 #ifndef CPP4_3DVIEWER_V2_0_1_FRONTEND_S21_COMMAND_H_
 #define CPP4_3DVIEWER_V2_0_1_FRONTEND_S21_COMMAND_H_
 
+#include <QApplication>
+#include <QColor>
+#include <QColorDialog>
+#include <QFileDialog>
+#include <QImageWriter>
+#include <QLabel>
+#include <QLineEdit>
+#include <QMainWindow>
+#include <QMesh>
+#include <QPushButton>
+#include <QScreen>
+#include <QWidget>
+#include <Qt3DExtras>
+#include <Qt3DRender/QRenderCapture>
 #include <string>
 
 #include "../backend/auxiliary_modules.h"
@@ -13,7 +27,7 @@ class Command {
  public:
   Command(Controller *controller) : controller_(controller) {}
   virtual ~Command() = default;
-  virtual void execute() = 0;
+  virtual void Execute() = 0;
 
  protected:
   Controller *controller_;
@@ -24,7 +38,7 @@ class LoadObjectCommand : public Command {
   LoadObjectCommand(Controller *controller, std::string filename,
                     Object *object_info)
       : Command(controller), filename_(filename), object_info_(object_info) {}
-  void execute() override {
+  void Execute() override {
     controller_->StartParsing(filename_, *object_info_);
   }
 
@@ -38,7 +52,7 @@ class SaveImageCommand : public Command {
   SaveImageCommand(Controller *controller, QString filename,
                    Qt3DExtras::Qt3DWindow *view)
       : Command(controller), filename_(filename), view_(view) {}
-  void execute() override {
+  void Execute() override {
     QScreen *screen = view_->screen();
     QPixmap screenshot = screen->grabWindow(view_->winId());
     if (!filename_.isEmpty()) screenshot.save(filename_);
@@ -55,7 +69,7 @@ class CreateGifCommand : public Command {
                    Qt3DExtras::Qt3DWindow *view)
       : Command(controller), gif_image_(gif_image), view_(view) {}
 
-  void execute() override {
+  void Execute() override {
     QPixmap screenshot = view_->screen()->grabWindow(view_->winId());
     gif_image_->addFrame(screenshot.toImage());
   }
@@ -77,7 +91,7 @@ class UpdateViewCommand : public Command {
         transform_(transform),
         filename_(filename),
         object_info_(object_info) {}
-  void execute() override {
+  void Execute() override {
     mesh_->setSource(QUrl::fromLocalFile(QString::fromStdString(filename_)));
     mesh_->setPrimitiveType(Qt3DRender::QGeometryRenderer::Lines);
     entity_object_->addComponent(mesh_);
@@ -97,7 +111,7 @@ class SettingsCommand : public Command {
  public:
   SettingsCommand(Controller *controller) : Command(controller) {}
   virtual ~SettingsCommand() = default;
-  virtual void execute() = 0;
+  virtual void Execute() = 0;
 };
 
 class BackgroundColorCommand : public SettingsCommand {
@@ -106,7 +120,7 @@ class BackgroundColorCommand : public SettingsCommand {
                          const QColor &color)
       : SettingsCommand(controller), view_(view), color_(color) {}
 
-  void execute() override { view_->defaultFrameGraph()->setClearColor(color_); }
+  void Execute() override { view_->defaultFrameGraph()->setClearColor(color_); }
 
  private:
   Qt3DExtras::Qt3DWindow *view_;
@@ -123,7 +137,7 @@ class LineColorCommand : public SettingsCommand {
         line_color_(line_color),
         line_material_(line_material) {}
 
-  void execute() override {
+  void Execute() override {
     line_material_->setAmbient(line_color_);
     object_->addComponent(line_material_);
   }
@@ -140,7 +154,7 @@ class ChangeLineTypeCommand : public SettingsCommand {
                         Qt3DRender::QGeometryRenderer::PrimitiveType type)
       : SettingsCommand(controller), mesh_(mesh), type_(type) {}
 
-  void execute() override { mesh_->setPrimitiveType(type_); }
+  void Execute() override { mesh_->setPrimitiveType(type_); }
 
  private:
   Qt3DRender::QMesh *mesh_;
@@ -165,7 +179,7 @@ class SetParallelProjectionCommand : public SetProjectionCommand {
                                Qt3DExtras::Qt3DWindow *view)
       : SetProjectionCommand(controller, camera_obj, view) {}
 
-  void execute() override {
+  void Execute() override {
     float aspect_ratio = float(view_->width()) / view_->height();
     camera_obj_->lens()->setOrthographicProjection(
         -aspect_ratio * 2.0f, aspect_ratio * 2.0f, -2.0f, 2.0f, 0.1f, 10000.0f);
@@ -184,7 +198,7 @@ class SetCentralProjectionCommand : public SetProjectionCommand {
                               Qt3DExtras::Qt3DWindow *view)
       : SetProjectionCommand(controller, camera_obj, view) {}
 
-  void execute() override {
+  void Execute() override {
     float aspect_ratio = float(view_->width()) / view_->height();
     camera_obj_->lens()->setPerspectiveProjection(45.0f, aspect_ratio, 0.1f,
                                                   10000.0f);

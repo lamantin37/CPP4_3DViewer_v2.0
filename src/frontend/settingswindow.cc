@@ -211,14 +211,14 @@ void SettingsWindow::ProjectionSettings(Qt3DRender::QCamera *camera_obj,
           [=]() {
             Command *command =
                 new SetParallelProjectionCommand(controller_, camera_obj, view);
-            command->execute();
+            command->Execute();
             delete command;
           });
 
   connect(central_projection_radio_button, &QRadioButton::clicked, this, [=]() {
     Command *command =
         new SetCentralProjectionCommand(controller_, camera_obj, view);
-    command->execute();
+    command->Execute();
     delete command;
   });
 }
@@ -235,14 +235,14 @@ void SettingsWindow::LineTypeSettings(Qt3DRender::QMesh *mesh) {
   connect(line_type_radio_button_, &QRadioButton::clicked, this, [=]() {
     Command *command = new ChangeLineTypeCommand(
         controller_, mesh, Qt3DRender::QGeometryRenderer::Lines);
-    command->execute();
+    command->Execute();
     delete command;
   });
 
   connect(dot_type_radio_button_, &QRadioButton::clicked, this, [=]() {
     Command *command = new ChangeLineTypeCommand(
         controller_, mesh, Qt3DRender::QGeometryRenderer::Points);
-    command->execute();
+    command->Execute();
     delete command;
   });
 }
@@ -256,7 +256,7 @@ void SettingsWindow::LineColorSettings(
     if (line_color_.isValid()) {
       Command *command =
           new LineColorCommand(controller_, object, line_color_, line_material);
-      command->execute();
+      command->Execute();
       delete command;
     }
   });
@@ -269,7 +269,7 @@ void SettingsWindow::BackgroundSettings(Qt3DExtras::Qt3DWindow *view) {
         QColorDialog::getColor(Qt::white, this, "Choose background color");
     if (color.isValid()) {
       Command *command = new BackgroundColorCommand(controller_, view, color);
-      command->execute();
+      command->Execute();
       delete command;
     }
   });

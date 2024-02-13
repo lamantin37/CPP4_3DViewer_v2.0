@@ -14,7 +14,7 @@ class Facade {
  public:
   Facade() {
     view_ = new Qt3DExtras::Qt3DWindow();
-    controller_ = new Controller(view_);
+    controller_ = new Controller();
     settings_window_ = new SettingsWindow(nullptr, controller_);
   }
   ~Facade() {
@@ -27,28 +27,23 @@ class Facade {
     Object object_info;
     Command *command = new LoadObjectCommand(
         controller_, filename.toStdString(), &object_info);
-    command->execute();
+    command->Execute();
     delete command;
     return object_info;
   }
 
   void ImageRender(const QString &filename, Qt3DExtras::Qt3DWindow *view) {
     Command *command = new SaveImageCommand(controller_, filename, view);
-    command->execute();
+    command->Execute();
     delete command;
   }
 
-  void UpdateView(const QString &filename, Object *object_info,
-                  Qt3DRender::QMesh *mesh, Qt3DCore::QEntity *entity_object,
-                  Qt3DCore::QTransform *transform, QSettings *settings,
-                  Qt3DExtras::Qt3DWindow *view,
-                  Qt3DExtras::QDiffuseSpecularMaterial *line_material,
-                  QLabel *file_label, QVBoxLayout *layout,
-                  Qt3DRender::QCamera *camera_obj) {
-    if (file_label != nullptr) {
-      layout->removeWidget(file_label);
-      delete file_label;
-    }
+  QLabel *UpdateView(const QString &filename, Object *object_info,
+                     Qt3DRender::QMesh *mesh, Qt3DCore::QEntity *entity_object,
+                     Qt3DCore::QTransform *transform, QSettings *settings,
+                     Qt3DExtras::Qt3DWindow *view,
+                     Qt3DExtras::QDiffuseSpecularMaterial *line_material,
+                     QVBoxLayout *layout, Qt3DRender::QCamera *camera_obj) {
     QString file_info = QString("<b>File:</b> %1<br>").arg(filename);
     QString vertices_info =
         QString("<b>Number of vertices:</b> %1<br>")
@@ -56,16 +51,17 @@ class Facade {
     QString polygons_info =
         QString("<b>Number of polygons:</b> %1")
             .arg(QString::number(object_info->num_of_polygons));
-    file_label = new QLabel(file_info + vertices_info + polygons_info);
+    QLabel *file_label = new QLabel(file_info + vertices_info + polygons_info);
     layout->addWidget(file_label);
     file_label->setMaximumHeight(60);
     const std::string filename_std = filename.toStdString();
     Command *command = new UpdateViewCommand(
         controller_, mesh, entity_object, transform, filename_std, object_info);
-    command->execute();
+    command->Execute();
     delete command;
     settings_window_->LoadSettings(settings, camera_obj, mesh, view,
                                    entity_object, line_material);
+    return file_label;
   }
 
   void StartGifCreation(const QString &filename, int fps) {
@@ -76,7 +72,7 @@ class Facade {
 
   void CaptureFrameForGif(Qt3DExtras::Qt3DWindow *view) {
     Command *command = new CreateGifCommand(controller_, gif_image_, view);
-    command->execute();
+    command->Execute();
     delete command;
   }
 

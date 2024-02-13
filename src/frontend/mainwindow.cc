@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
   view_ = new Qt3DExtras::Qt3DWindow();  // создаем окно для отображения сцены
   view_->defaultFrameGraph()->setClearColor(QRgb(0xffffff));  // стандартный фон
   view_->setRootEntity(parent_win_);  // устанавливаем корневое окно
-  controller_ = new Controller(view_);
+  controller_ = new Controller();
   QSize screen_size = view_->screen()->size();  // получение размера окна
   facade_ = new Facade();
 
@@ -110,11 +110,15 @@ void MainWindow::UpdateView(const QString &filename, Object *object_info) {
     entity_object_->removeComponent(mesh_);
     delete mesh_;
   }
+  if (file_label_ != nullptr) {
+    layout_->removeWidget(file_label_);
+    delete file_label_;
+  }
   mesh_ = new Qt3DRender::QMesh(parent_win_);
   previous_model_ = filename;
-  facade_->UpdateView(filename, object_info, mesh_, entity_object_, transform_,
-                      &re_settings_, view_, line_material_, file_label_,
-                      layout_, camera_obj_);
+  file_label_ = facade_->UpdateView(
+      filename, object_info, mesh_, entity_object_, transform_, &re_settings_,
+      view_, line_material_, layout_, camera_obj_);
   Settings();
 }
 

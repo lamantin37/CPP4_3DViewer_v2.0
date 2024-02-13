@@ -4,10 +4,7 @@
 #include <iostream>
 
 namespace s21 {
-Controller::Controller(Qt3DExtras::Qt3DWindow *view)
-    : auxiliary_modules(new AuxiliaryModules()), view_(view) {}
-
-Qt3DExtras::Qt3DWindow *Controller::getView() { return view_; }
+Controller::Controller() : auxiliary_modules_(new AuxiliaryModules()) {}
 
 void Controller::StartParsing(const std::string &filename,
                               Object &object_info) {
@@ -16,9 +13,9 @@ void Controller::StartParsing(const std::string &filename,
     std::cerr << "Error opening file\n";
     return;
   }
-  auxiliary_modules->ParserCounter(file, object_info);
-  auxiliary_modules->ObjectParser(file, object_info);
+  auxiliary_modules_->ParserCounter(file, object_info);
+  auxiliary_modules_->ObjectParser(file, object_info);
 }
 
-Controller::~Controller() { delete auxiliary_modules; }
+Controller::~Controller() { delete auxiliary_modules_; }
 }  // namespace s21
