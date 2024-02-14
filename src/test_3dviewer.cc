@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "./backend/auxiliary_modules.h"
+#include "./backend/s21_auxiliary_modules.h"
 
 TEST(test_parser1, True) {
   std::ifstream file("models/teapot.obj");

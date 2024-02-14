@@ -63,26 +63,6 @@ uninstall:
 	make clean
 	-rm -rf ../${BUILD_SRC}
 
-
-gcov_report: clean
-	mkdir report
-	@$(CC) $(CFLAGS) $(CFLAGS_TEST) $(CFLAGS_GCOV) $(HEADERS_BACKEND) $(HEADERS_FRONTEND) $(SOURCE_BACKEND) $(SOURCE_FRONTEND) $(TESTS) -o $(DIR) $(ADD_LIB)
-	@$(DIR)
-	@gcov tests
-	@lcov --capture --directory report --output-file report/main_coverage.info
-	@genhtml report/main_coverage.info --output-directory report/lcov_report/index.html
-
-ifeq ($(_UNAME_), Darwin) # MacOS
-	open $(BROWSER_APP)./ report/src/index.html
-else
-	$(BROWSER_APP)./ report/src/index.html
-endif
-
-lcov:
-ifeq ("", "$(shell PATH=$(PATH) which lcov)")
-	$(error Need to install lcov)
-endif
-
 dvi:
 	$(info                                         )
 	$(info ----------------------------------------)
